@@ -42,7 +42,7 @@ import { Typography } from "@material-ui/core";
 
 // const useStyles = makeStyles(styles);
 
-class Dashboard extends React.Component {
+class ScheduleTeach extends React.Component {
   constructor(props){
     super(props);
     this.state = {
@@ -270,4 +270,4 @@ const styleLocal = {
   },
   ...styles
 }
-export default withStyles(styleLocal)(Dashboard);
+export default withStyles(styleLocal)(ScheduleTeach);

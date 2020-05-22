@@ -38,6 +38,7 @@ class Root extends React.Component{
         <Switch>
           <Route path="/teacher" component={Admin} />
           <Route path="/login" component={Login} />
+          <Redirect to={{pathname : '/teacher/lich-giang-day'}}/>
           {/* <Redirect from="/" to="/login" /> */}
         </Switch>
       </Router>

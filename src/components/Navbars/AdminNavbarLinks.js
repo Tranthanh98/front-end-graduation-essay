@@ -18,12 +18,16 @@ import Search from "@material-ui/icons/Search";
 // core components
 import CustomInput from "components/CustomInput/CustomInput.js";
 import Button from "components/CustomButtons/Button.js";
+import { withRouter, Redirect } from "react-router-dom";
 
 import styles from "assets/jss/material-dashboard-react/components/headerLinksStyle.js";
+import BaseComponent from '../../core/BaseComponent/BaseComponent';
+import * as httpClient from '../../core/HttpClient';
+import { sensitiveStorage } from "../../core/services/SensitiveStorage";
 
 const useStyles = makeStyles(styles);
 
-class AdminNavbarLinks extends React.Component {
+class AdminNavbarLinks extends BaseComponent {
   //const classes = useStyles();
   constructor(props){
     super(props);
@@ -65,7 +69,11 @@ class AdminNavbarLinks extends React.Component {
   handleCloseProfile = () => {
     this.setOpenProfile(null);
   };
-  render(){
+  _hanldeLogout = () => {
+    console.log("test logout")
+    this.logout();
+  }
+  renderBody(){
     const {classes} = this.props;
     return (
       <div>
@@ -223,14 +231,24 @@ class AdminNavbarLinks extends React.Component {
                         onClick={this.handleCloseProfile}
                         className={classes.dropdownItem}
                       >
-                        Settings
+                        Cài đặt
                       </MenuItem>
                       <Divider light />
                       <MenuItem
-                        onClick={this.handleCloseProfile}
+                        onClick={ async() => {
+                          console.log("test thành");
+                          this.updateStateLoader(true);
+                          let response = await httpClient.sendPost("/logout-teacher", {token : sensitiveStorage.getToken()});
+                          this.updateStateLoader(false);
+                          if(this.validateApi(response)){
+                            this.logout()
+                            this.goTo("/login")
+                          }
+                          
+                        }}
                         className={classes.dropdownItem}
                       >
-                        Logout
+                        Đăng xuất
                       </MenuItem>
                     </MenuList>
                   </ClickAwayListener>
@@ -243,4 +261,4 @@ class AdminNavbarLinks extends React.Component {
     );
   }
 }
-export default withStyles(styles)(AdminNavbarLinks)
+export default withRouter(withStyles(styles)(AdminNavbarLinks));

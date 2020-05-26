@@ -9,7 +9,8 @@ import Card from "components/Card/Card.js";
 import CardHeader from "components/Card/CardHeader.js";
 import CardBody from "components/Card/CardBody.js";
 import AutoComplete from "components/AutoComplete/AutoComplete";
-import {Typography} from '@material-ui/core'
+import {Typography, withStyles} from '@material-ui/core';
+import SearchEngine from '../../components/SeachEngine/SearchEngine';
 
 const styles = {
   cardCategoryWhite: {
@@ -41,82 +42,93 @@ const styles = {
   }
 };
 
-const useStyles = makeStyles(styles);
-
-export default function TableList() {
-  const classes = useStyles();
-  return (
-    <GridContainer>
-      <GridItem xs={12} sm={3}>
-        <Typography>
-          Chọn lớp học của bạn : 
-        </Typography>
-      </GridItem>
-      <GridItem xs={12} sm={6}>
-        <AutoComplete/>
-      </GridItem>
-      <GridItem xs={12} sm={12} md={12}>
-        <Card>
-          <CardHeader color="primary">
-            <h4 className={classes.cardTitleWhite}>Simple Table</h4>
-            <p className={classes.cardCategoryWhite}>
-              Here is a subtitle for this table
-            </p>
-          </CardHeader>
-          <CardBody>
-            <Table
-              tableHeaderColor="primary"
-              tableHead={["Name", "Country", "City", "Salary"]}
-              tableData={[
-                ["Dakota Rice", "Niger", "Oud-Turnhout", "$36,738"],
-                ["Minerva Hooper", "Curaçao", "Sinaai-Waas", "$23,789"],
-                ["Sage Rodriguez", "Netherlands", "Baileux", "$56,142"],
-                ["Philip Chaney", "Korea, South", "Overland Park", "$38,735"],
-                ["Doris Greene", "Malawi", "Feldkirchen in Kärnten", "$63,542"],
-                ["Mason Porter", "Chile", "Gloucester", "$78,615"]
-              ]}
-            />
-          </CardBody>
-        </Card>
-      </GridItem>
-      <GridItem xs={12} sm={12} md={12}>
-        <Card plain>
-          <CardHeader plain color="primary">
-            <h4 className={classes.cardTitleWhite}>
-              Table on Plain Background
-            </h4>
-            <p className={classes.cardCategoryWhite}>
-              Here is a subtitle for this table
-            </p>
-          </CardHeader>
-          <CardBody>
-            <Table
-              tableHeaderColor="primary"
-              tableHead={["ID", "Name", "Country", "City", "Salary"]}
-              tableData={[
-                ["1", "Dakota Rice", "$36,738", "Niger", "Oud-Turnhout"],
-                ["2", "Minerva Hooper", "$23,789", "Curaçao", "Sinaai-Waas"],
-                ["3", "Sage Rodriguez", "$56,142", "Netherlands", "Baileux"],
-                [
-                  "4",
-                  "Philip Chaney",
-                  "$38,735",
-                  "Korea, South",
-                  "Overland Park"
-                ],
-                [
-                  "5",
-                  "Doris Greene",
-                  "$63,542",
-                  "Malawi",
-                  "Feldkirchen in Kärnten"
-                ],
-                ["6", "Mason Porter", "$78,615", "Chile", "Gloucester"]
-              ]}
-            />
-          </CardBody>
-        </Card>
-      </GridItem>
-    </GridContainer>
-  );
+class RollCall extends React.Component {
+  componentDidMount(){
+    console.log('param :',this.props.match.params);
+  }
+  render(){
+    const {classes} = this.props;
+    const {params} = this.props.match;
+    return (
+      <GridContainer>
+        {
+          params.id == ":id" ? (
+            <>
+              <GridItem xs={12} sm={3}>
+                <Typography>
+                  Chọn lớp học của bạn : 
+                </Typography>
+              </GridItem>
+              <GridItem xs={12} sm={3}>
+                <SearchEngine/>
+              </GridItem>
+            </>
+          ): null
+        }
+        <GridItem xs={12} sm={12} md={12}>
+          <Card>
+            <CardHeader color="primary">
+              <h4 className={classes.cardTitleWhite}>Simple Table</h4>
+              <p className={classes.cardCategoryWhite}>
+                Here is a subtitle for this table
+              </p>
+            </CardHeader>
+            <CardBody>
+              <Table
+                tableHeaderColor="primary"
+                tableHead={["Name", "Country", "City", "Salary"]}
+                tableData={[
+                  ["Dakota Rice", "Niger", "Oud-Turnhout", "$36,738"],
+                  ["Minerva Hooper", "Curaçao", "Sinaai-Waas", "$23,789"],
+                  ["Sage Rodriguez", "Netherlands", "Baileux", "$56,142"],
+                  ["Philip Chaney", "Korea, South", "Overland Park", "$38,735"],
+                  ["Doris Greene", "Malawi", "Feldkirchen in Kärnten", "$63,542"],
+                  ["Mason Porter", "Chile", "Gloucester", "$78,615"]
+                ]}
+              />
+            </CardBody>
+          </Card>
+        </GridItem>
+        <GridItem xs={12} sm={12} md={12}>
+          <Card plain>
+            <CardHeader plain color="primary">
+              <h4 className={classes.cardTitleWhite}>
+                Table on Plain Background
+              </h4>
+              <p className={classes.cardCategoryWhite}>
+                Here is a subtitle for this table
+              </p>
+            </CardHeader>
+            <CardBody>
+              <Table
+                tableHeaderColor="primary"
+                tableHead={["ID", "Name", "Country", "City", "Salary"]}
+                tableData={[
+                  ["1", "Dakota Rice", "$36,738", "Niger", "Oud-Turnhout"],
+                  ["2", "Minerva Hooper", "$23,789", "Curaçao", "Sinaai-Waas"],
+                  ["3", "Sage Rodriguez", "$56,142", "Netherlands", "Baileux"],
+                  [
+                    "4",
+                    "Philip Chaney",
+                    "$38,735",
+                    "Korea, South",
+                    "Overland Park"
+                  ],
+                  [
+                    "5",
+                    "Doris Greene",
+                    "$63,542",
+                    "Malawi",
+                    "Feldkirchen in Kärnten"
+                  ],
+                  ["6", "Mason Porter", "$78,615", "Chile", "Gloucester"]
+                ]}
+              />
+            </CardBody>
+          </Card>
+        </GridItem>
+      </GridContainer>
+    );
+  }
 }
+export default withStyles(styles)(RollCall);

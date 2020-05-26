@@ -55,7 +55,7 @@ const dashboardRoutes = [
     layout: "/teacher"
   },
   {
-    path: "/diem-danh",
+    path: "/diem-danh/:id",
     name: "Điểm danh",
     rtlName: "قائمة الجدول",
     icon: "content_paste",

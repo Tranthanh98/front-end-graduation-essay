@@ -2,7 +2,7 @@ import React from "react";
 // react plugin for creating charts
 import ChartistGraph from "react-chartist";
 // @material-ui/core
-import { makeStyles, withStyles } from "@material-ui/core/styles";
+import { withStyles } from "@material-ui/core/styles";
 import Icon from "@material-ui/core/Icon";
 // @material-ui/icons
 import Store from "@material-ui/icons/Store";
@@ -40,16 +40,22 @@ import {
 import styles from "assets/jss/material-dashboard-react/views/dashboardStyle.js";
 import { Typography } from "@material-ui/core";
 
-// const useStyles = makeStyles(styles);
+import {
+  MuiPickersUtilsProvider,
+  KeyboardDatePicker
+} from '@material-ui/pickers';
+import DateFnsUtils from '@date-io/date-fns';
+import { withRouter } from "react-router-dom";
+import BaseComponent from '../../core/BaseComponent/BaseComponent';
 
-class Dashboard extends React.Component {
+class ScheduleTeach extends BaseComponent {
   constructor(props){
     super(props);
     this.state = {
       scheduleTeach : [
         {
           id : 0,
-          time : "09:20",
+          time : "Đang diễn ra",
           classRoom : "B201",
           quantityStudent : 50,
           nameSubject : "Lập trình căn bản"
@@ -75,14 +81,48 @@ class Dashboard extends React.Component {
           quantityStudent : 50,
           nameSubject : "C#"
         }
-      ]
+      ],
+      nowDate : new Date()
     }
   }
-  render(){
+  _onChangeDate = (dateValue)=>{
+    this.setState({
+      nowDate : dateValue
+    })
+    console.log('date ', dateValue);
+  }
+  joinClassRoom = (valueId)=>{
+    console.log("value :", valueId);
+    this.goTo('/teacher/diem-danh', valueId);
+    // return (
+    //   <Redirect to="/teacher/diem-danh"/>
+    // )
+    // this.props.history.push("/teacher/diem-danh/"+valueId)
+  }
+  renderBody(){
     const {classes} = this.props;
     return (
       <div>
         <GridContainer>
+          <GridItem xs={12} sm={12}  ms={12}>
+            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                <KeyboardDatePicker
+                  margin="normal"
+                  id="date-picker-dialog"
+                  label="Chọn ngày"
+                  format="dd/MM/yyyy"
+                  value={this.state.nowDate}
+                  onChange={this._onChangeDate}
+                  KeyboardButtonProps={{
+                    'aria-label': 'change date',
+                  }}
+                />
+            </MuiPickersUtilsProvider>
+            {/* <DatePicker
+              selected={this.state.nowDate}
+              onChange={this._onChangeDate}
+            /> */}
+          </GridItem>
           {
             this.state.scheduleTeach.map((item, index) => {
               let color = "warning";
@@ -94,12 +134,12 @@ class Dashboard extends React.Component {
               }
               return (
                 <GridItem key={index + item.id} xs={12} sm={6} md={3}>
-                  <div className={classes.card} onClick={() => {console.log("ahihihi")}}>
+                  <div className={classes.card} onClick={() => this.joinClassRoom(item.id)}>
                     <Card>
                       <CardHeader color={color} stats icon>
                         <CardIcon color={color}>
                           {/* <Icon>content_copy</Icon> */}
-                          <Typography component="h4" variant="h4">{item.time}</Typography>
+                          <Typography component="h2" variant={item.time.length > 9 ? "h6" : "h4"}>{item.time}</Typography>
                         </CardIcon>
                         <p className={classes.cardCategory}>Phòng: {item.classRoom}</p>
                         <strong style={{color:"black"}}>Sĩ số: {item.quantityStudent}</strong>
@@ -149,7 +189,7 @@ class Dashboard extends React.Component {
               </CardFooter>
             </Card>
           </GridItem>
-          <GridItem xs={12} sm={12} md={4}>
+          {/* <GridItem xs={12} sm={12} md={4}>
             <Card chart>
               <CardHeader color="warning">
                 <ChartistGraph
@@ -193,9 +233,9 @@ class Dashboard extends React.Component {
                 </div>
               </CardFooter>
             </Card>
-          </GridItem>
+          </GridItem> */}
         </GridContainer>
-        <GridContainer>
+        {/* <GridContainer>
           <GridItem xs={12} sm={12} md={6}>
             <CustomTabs
               title="Tasks:"
@@ -259,7 +299,7 @@ class Dashboard extends React.Component {
               </CardBody>
             </Card>
           </GridItem>
-        </GridContainer>
+        </GridContainer> */}
       </div>
     );
   }
@@ -270,4 +310,4 @@ const styleLocal = {
   },
   ...styles
 }
-export default withStyles(styleLocal)(Dashboard);
+export default withStyles(styleLocal)(ScheduleTeach);

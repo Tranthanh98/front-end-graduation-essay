@@ -15,13 +15,17 @@ import { makeStyles, createMuiTheme } from '@material-ui/core/styles';
 import {withStyles} from '@material-ui/core';
 import { withRouter, Redirect } from "react-router-dom";
 import localStorage from '../core/services/LocalStorage';
+import * as httpClient from '../core/HttpClient';
+import BaseComponent from '../core/BaseComponent/BaseComponent'
+import { sensitiveStorage } from 'core/services/SensitiveStorage';
+import imageBackground from '../assets/img/hcmus-249896_960_720.jpg';
 
 function Copyright() {
   return (
     <Typography variant="body2" color="textSecondary" align="center">
       {'Copyright © '}
       <Link color="inherit" href="https://material-ui.com/">
-        Your Website
+        Roll Call System
       </Link>{' '}
       {new Date().getFullYear()}
       {'.'}
@@ -34,7 +38,7 @@ const useStyles = (theme) => ({
     height: '100vh',
   },
   image: {
-    backgroundImage: 'url(https://source.unsplash.com/random)',
+    backgroundImage: `url(${imageBackground})`,
     backgroundRepeat: 'no-repeat',
     backgroundColor:
       theme.palette.type === 'light' ? theme.palette.grey[50] : theme.palette.grey[900],
@@ -58,41 +62,68 @@ const useStyles = (theme) => ({
   submit: {
     margin: theme.spacing(3, 0, 2),
   },
+  backdrop: {
+    zIndex: theme.zIndex.drawer + 1,
+    color: '#fff',
+  }
 });
 
-class Login extends React.Component {
+class Login extends BaseComponent {
     constructor(props){
       super(props);
       this.state = {
-        auth : false
+        auth : false,
+        userName : "",
+        password : "",
+        error : false,
+        errorMessage : "",
+        // statusLoader : false
       }
     }
   
     componentDidMount(){
-      this.setState({
-        auth : localStorage.getItem('auth') ? localStorage.getItem('auth') : false
-      })
-      if(localStorage.getItem('auth')){
+      // this.setState({
+      //   token : sensitiveStorage.getToken() ? sensitiveStorage.getToken() : null
+      // })
+      if(sensitiveStorage.getToken() != null){
         this.props.history.push({pathname : "/teacher/lich-giang-day"});
       }
     }
-    _onClickLogin = ()=>{
-      this.setState({auth: true});
-      localStorage.setItem('auth', true);
-      console.log("auth successfully")
-      this.props.history.push( { pathname: '/teacher/lich-giang-day' })
-      console.log("hist : ", this.props.history);
-      // return(
-      //   <Redirect from="/login" to="/admin/dashboard"/>
-      // )
+    _onClickLogin = async()=>{
+      let loginInfor = {
+        userName : this.state.userName,
+        password : this.state.password
+      }
+      this.updateStateLoader(true);
+      let response = await httpClient.sendPost('/login-teacher', loginInfor);
+      this.updateStateLoader(false);
+      if(this.validateApi(response)){
+        this.login(response);
+        this.props.updateState(response.data.Data.id, response.data.Data.token)
+        this.goTo('/teacher/lich-giang-day');
+      }
+      else{
+        this.setState({
+          error : true,
+          errorMessage : response.data.errorMessage
+        });
+      }
+      console.log('response', response);
     }
-    render(){
+    _hanldeOnchangeUserName =(e)=>{
+      this.setState({
+        userName : e.target.value
+      })
+    }
+    _hanldeOnChangePassword = (e)=>{
+      this.setState({
+        password : e.target.value
+      })
+    }
+    renderBody(){
         const theme = createMuiTheme();
         const {classes} = this.props;
         const { from } = this.props.location.state || { from: { pathname: '/teacher/lich-giang-day' } }
-        // if(this.state.auth){
-        //   return (<Redirect to={from}/>)
-        // }
         return (
             <Grid container component="main" className={classes.root}>
               <CssBaseline />
@@ -103,8 +134,13 @@ class Login extends React.Component {
                     <LockOutlinedIcon />
                   </Avatar>
                   <Typography component="h1" variant="h5">
-                    Sign in
+                    Đăng nhập giảng viên
                   </Typography>
+                  {
+                    this.state.error ? (
+                    <Typography color="error">{this.state.errorMessage}</Typography>
+                    ): null
+                  }
                   <form className={classes.form} noValidate>
                     <TextField
                       variant="outlined"
@@ -112,9 +148,11 @@ class Login extends React.Component {
                       required
                       fullWidth
                       id="email"
-                      label="Email Address"
-                      name="email"
+                      label="Tài khoản"
+                      name="userName"
                       autoComplete="email"
+                      value={this.state.userName}
+                      onChange={(e)=> this._hanldeOnchangeUserName(e)}
                       autoFocus
                     />
                     <TextField
@@ -123,14 +161,16 @@ class Login extends React.Component {
                       required
                       fullWidth
                       name="password"
-                      label="Password"
+                      label="Mật khẩu"
                       type="password"
                       id="password"
                       autoComplete="current-password"
+                      value={this.state.password}
+                      onChange={(e)=> this._hanldeOnChangePassword(e)}
                     />
                     <FormControlLabel
                       control={<Checkbox value="remember" color="primary" />}
-                      label="Remember me"
+                      label="Ghi nhớ"
                     />
                     <Button
                       onClick={this._onClickLogin}
@@ -139,17 +179,12 @@ class Login extends React.Component {
                       color="primary"
                       className={classes.submit}
                     >
-                      Sign In
+                      Đăng nhập
                     </Button>
                     <Grid container>
                       <Grid item xs>
                         <Link href="#" variant="body2">
-                          Forgot password?
-                        </Link>
-                      </Grid>
-                      <Grid item>
-                        <Link href="#" variant="body2">
-                          {"Don't have an account? Sign Up"}
+                          Quên mật khẩu ?
                         </Link>
                       </Grid>
                     </Grid>

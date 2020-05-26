@@ -19,7 +19,7 @@ import styles from "assets/jss/material-dashboard-react/layouts/adminStyle.js";
 import bgImage from "assets/img/sidebar-2.jpg";
 import logo from "assets/img/logo-khtn.png";
 import localStorage from '../core/services/LocalStorage';
-
+import {sensitiveStorage} from '../core/services/SensitiveStorage';
 let ps;
 class Admin extends React.Component {
   constructor(props){
@@ -36,11 +36,13 @@ class Admin extends React.Component {
     return(
       <Switch>
         {routes.map((prop, key) => {
-          const auth = localStorage.getItem('auth');
-          // debugger;
+          const auth = sensitiveStorage.getToken();
+          const {token, userId} = this.props;
+          // console.log('auth :', auth);
+          // console.log('token :', token);
           let component = prop.component;
 
-          if (auth ==true) {
+          if (auth != null) {
             return (
               <Route
                 path={prop.layout + prop.path}

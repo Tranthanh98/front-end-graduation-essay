@@ -37,7 +37,9 @@ class Admin extends React.Component {
       <Switch>
         {routes.map((prop, key) => {
           const auth = sensitiveStorage.getToken();
-          // debugger;
+          const {token, userId} = this.props;
+          // console.log('auth :', auth);
+          // console.log('token :', token);
           let component = prop.component;
 
           if (auth != null) {

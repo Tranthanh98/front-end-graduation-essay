@@ -3,6 +3,8 @@ import axios from 'axios';
 import lodash from 'lodash';
 import TextField from '@material-ui/core/TextField';
 import * as httpClient from '../../core/HttpClient';
+import {Typography, withStyles} from '@material-ui/core';
+import {sensitiveStorage} from '../../core/services/SensitiveStorage';
 
 const searchAPi = async (text)  => axios.get("https://country.register.gov.uk/records.json?page-size=5000");
 class SearchEngine extends React.Component{
@@ -11,23 +13,29 @@ class SearchEngine extends React.Component{
         this.state = {
             value : "",
             listClass : [],
-            selected : ""
+            selected : "",
+            isShowSelect : false
         }
         this.searchAsync = lodash.debounce(this.searchEngineAsync, 1000);
     }
+    componentDidMount(){
+      document.addEventListener("click", this._closeSelected);
+    }
     searchEngineAsync = async()=>{
       let data = {
-        className : this.state.value
+        className : this.state.value,
+        teacherId : sensitiveStorage.getUserId()
       }
         let response = await httpClient.sendPost('/search-class', data);
         console.log("response :", response);
         this.setState({
-          listClass : response.data.Data.data
+          listClass : response.data.Data
         })
     }
     handleChange = async(e) =>{
         await this.setState({
-            value : e.target.value
+            value : e.target.value,
+            isShowSelect : true
         })
         await this.searchAsync();
     }
@@ -36,29 +44,64 @@ class SearchEngine extends React.Component{
         selected : e.target.value
       })
     }
+    _closeSelected = () =>{
+      this.setState({
+        isShowSelect : false
+      })
+    }
+    _onClickSelect=(item)=>{
+      console.log('item :', item)
+      this.setState({
+        value : item.ten_mon,
+        isShowSelect : false
+      })
+    }
     render(){
+      const {classes} = this.props;
       return(
-        <TextField
-          id="outlined-select-currency-native"
-          label="Native select"
-          value={this.state.value}
-          onChange={(e) => this.handleChange(e)}
-          SelectProps={{
-            native: true,
-          }}
-          helperText="Please select your currency"
-          variant="outlined"
-        >
-          <select value={this.state.selected} onChange={(e)=> this._hanldeSelected(e)}>
-            {this.state.listClass.map((option) => (
-              <option key={option.ma_mon} value={option.ten_mon}>
-                {option.ten_mon}
-              </option>
-            ))}
-          </select>
-          
-        </TextField>
+        <div className={classes.wrapperSearch}>
+          <TextField
+            fullWidth
+            id="outlined-select-currency-native"
+            label="Nhập lớp học"
+            value={this.state.value}
+            onChange={(e) => this.handleChange(e)}
+            SelectProps={{
+              native: true,
+            }}
+            variant="outlined"
+          >
+          </TextField>
+          { 
+            this.state.isShowSelect ? (
+            <div className={classes.autoComplete}>
+              {
+                this.state.listClass.map((item,index) => {
+                  return(
+                    <Typography key={index} onClick={()=> this._onClickSelect(item)}>
+                      {item.ten_mon}
+                    </Typography>
+                  )
+                })
+              }
+            </div>) : null
+          }
+        </div>
       );
     }
 }
-export default SearchEngine;
+const style={
+  autoComplete: {
+    border: "1px solid gray",
+    borderRadius : "5px",
+    backgroundColor:"white",
+    cursor:"pointer",
+    position : "absolute",
+    minWidth : "238px",
+    zIndex : 999
+  },
+  wrapperSearch : {
+    position : "relative"
+  }
+}
+export default withStyles(style)(SearchEngine);

@@ -59,7 +59,7 @@ class RollCall extends React.Component {
                   Chọn lớp học của bạn : 
                 </Typography>
               </GridItem>
-              <GridItem xs={12} sm={6}>
+              <GridItem xs={12} sm={3}>
                 <SearchEngine/>
               </GridItem>
             </>

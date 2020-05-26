@@ -99,6 +99,7 @@ class Login extends BaseComponent {
       this.updateStateLoader(false);
       if(this.validateApi(response)){
         this.login(response);
+        this.props.updateState(response.data.Data.id, response.data.Data.token)
         this.goTo('/teacher/lich-giang-day');
       }
       else{

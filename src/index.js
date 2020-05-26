@@ -29,15 +29,25 @@ import "assets/css/material-dashboard-react.css?v=1.8.0";
 const hist = createBrowserHistory();
 
 class Root extends React.Component{
-  // componentDidMount(){
-  //   window.open("http://localhost:4200/teacher/lich-giang-day", "_self");
-  // }
+  constructor(props){
+    super(props);
+    this.state = {
+      userId : "",
+      token : "",
+    }
+  }
+  updateState=(userId, token)=>{
+    this.setState({
+      userId,
+      token
+    })
+  }
   render(){
     return(
       <Router history={hist}>
         <Switch>
-          <Route path="/teacher" component={Admin} />
-          <Route path="/login" component={Login} />
+          <Route path="/teacher" render={(props) => <Admin {...props} userId={this.state.userId} token={this.state.token}/>} />
+          <Route path="/login" render={(props) => <Login {...props} updateState={this.updateState}/>} />
           <Redirect to={{pathname : '/teacher/lich-giang-day'}}/>
           {/* <Redirect from="/" to="/login" /> */}
         </Switch>

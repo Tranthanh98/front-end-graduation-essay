@@ -9,8 +9,12 @@ import Card from "components/Card/Card.js";
 import CardHeader from "components/Card/CardHeader.js";
 import CardBody from "components/Card/CardBody.js";
 import AutoComplete from "components/AutoComplete/AutoComplete";
-import {Typography, withStyles} from '@material-ui/core';
+import {Typography, withStyles, Button} from '@material-ui/core';
 import SearchEngine from '../../components/SeachEngine/SearchEngine';
+import BaseComponent from '../../core/BaseComponent/BaseComponent';
+import * as httpClient from '../../core/HttpClient';
+import Checkbox from '@material-ui/core/Checkbox';
+import WebcamRollCall from '../../components/Webcam/Webcam';
 
 const styles = {
   cardCategoryWhite: {
@@ -42,17 +46,117 @@ const styles = {
   }
 };
 
-class RollCall extends React.Component {
-  componentDidMount(){
-    console.log('param :',this.props.match.params);
+class RollCall extends BaseComponent {
+  constructor(props){
+    super(props);
+    this.state = {
+      maLop : "",
+      tabledData : [],
+      isShowSearchClass : false,
+      errorMessage : "",
+      isShowTable : false,
+      fileImage : null
+    }
   }
-  render(){
+  async componentDidMount(){
+    console.log('props roll call :', this.props.color)
+    if(this.props.location.state != null){
+      console.log('param :',this.props.location.state.id);
+      let data = {
+        MaMon : this.props.location.state.id,
+        teacherId : this.getUserId(),
+        date : this.formatDateTime(new Date(), "YYYY-MM-DD")
+      }
+      console.log('data send get student :', data);
+      let response = await httpClient.sendPost('/get-student-by-class', data);
+      console.log('response student :', response);
+      this.setState({
+        tabledData : response.data.Data,
+        isShowTable : true
+      })
+    }
+    else{
+      this.setState({
+        isShowSearchClass : true
+      })
+    }
+  }
+  getDataStudentOfClass = async(item) =>{
+    let data = {
+      MaMon : item.ma_mon,
+      teacherId : this.getUserId(),
+      date : this.formatDateTime(new Date, "YYYY-MM-DD")
+    }
+    this.updateStateLoader(true);
+    let response = await httpClient.sendPost('/get-student-by-class', data);
+    this.updateStateLoader(false);
+    if(!this.validateApi(response)){
+      const {errorMessage} = response.data;
+      const isShowTable = response.data.isSuccess;
+      console.log('errorMessage :', errorMessage);
+      this.setState({
+        errorMessage,
+        isShowTable
+      });
+    }
+    else{
+      this.setState({
+        tabledData : response.data.Data,
+        isShowTable : true
+      })
+    }
+    
+  }
+  _trainingFace = async(item) =>{
+    let data = {
+      Mssv : item.Mssv,
+      stringImage : this.state.fileImage
+    }
+    this.updateStateLoader(true);
+    let response = await httpClient.sendPost('/training-face', data);
+    this.updateStateLoader(false);
+    if(!this.validateApi(response)){
+      this.setState({
+        errorMessage : response.data.errorMessage
+      })
+    }
+    console.log('training face res :', response);
+  }
+  _renderTableRow = () => {
+    return this.state.tabledData.map((item,index)=>{
+      return [
+        <Typography>{item.Mssv}</Typography>,
+        <Typography>{item.NameStudent}</Typography>,
+        <Typography>
+          <Checkbox
+            color="primary"/>
+        </Typography>,
+        <Typography>
+          6
+        </Typography>,
+        <Typography>
+          <Button disabled={this.state.fileImage !== null ? false : true} onClick={()=>this._trainingFace(item)} color="secondary">
+            Training
+          </Button>
+        </Typography>
+      ]
+    })
+  }
+  loadImage = (image) => {
+    this.setState({
+      fileImage : image
+    })
+    let listMssv = this.state.tabledData.map(item =>{
+      return item.Mssv
+    });
+    
+  }
+  renderBody(){
     const {classes} = this.props;
-    const {params} = this.props.match;
     return (
       <GridContainer>
         {
-          params.id == ":id" ? (
+          this.state.isShowSearchClass == true ? (
             <>
               <GridItem xs={12} sm={3}>
                 <Typography>
@@ -60,35 +164,42 @@ class RollCall extends React.Component {
                 </Typography>
               </GridItem>
               <GridItem xs={12} sm={3}>
-                <SearchEngine/>
+                <SearchEngine updateDataClass={this.getDataStudentOfClass}/>
               </GridItem>
             </>
           ): null
         }
-        <GridItem xs={12} sm={12} md={12}>
-          <Card>
-            <CardHeader color="primary">
-              <h4 className={classes.cardTitleWhite}>Simple Table</h4>
-              <p className={classes.cardCategoryWhite}>
-                Here is a subtitle for this table
-              </p>
-            </CardHeader>
-            <CardBody>
-              <Table
-                tableHeaderColor="primary"
-                tableHead={["Name", "Country", "City", "Salary"]}
-                tableData={[
-                  ["Dakota Rice", "Niger", "Oud-Turnhout", "$36,738"],
-                  ["Minerva Hooper", "Curaçao", "Sinaai-Waas", "$23,789"],
-                  ["Sage Rodriguez", "Netherlands", "Baileux", "$56,142"],
-                  ["Philip Chaney", "Korea, South", "Overland Park", "$38,735"],
-                  ["Doris Greene", "Malawi", "Feldkirchen in Kärnten", "$63,542"],
-                  ["Mason Porter", "Chile", "Gloucester", "$78,615"]
-                ]}
-              />
-            </CardBody>
-          </Card>
-        </GridItem>
+        {
+          this.state.isShowTable === true ? (
+            <>
+              <GridItem xs={12}>
+                <WebcamRollCall fileImage={this.state.fileImage} updateImage={this.loadImage} color={this.props.color}/>
+              </GridItem>
+              <GridItem xs={12} sm={12} md={12}>
+                  <Card>
+                    <CardHeader color="primary">
+                      <h4 className={classes.cardTitleWhite}>Simple Table</h4>
+                      <p className={classes.cardCategoryWhite}>
+                        Here is a subtitle for this table
+                      </p>
+                    </CardHeader>
+                    <CardBody>
+                      <Table
+                        tableHeaderColor="primary"
+                        tableHead={["MSSV", "Tên SV", "Điểm danh", "Số ảnh training",""]}
+                        tableData={this._renderTableRow()}
+                      />
+                    </CardBody>
+                  </Card>
+              </GridItem>
+            </>
+          ) : (
+            <Typography color="error">
+              {this.state.errorMessage}
+            </Typography>
+          )
+        }
+        
         <GridItem xs={12} sm={12} md={12}>
           <Card plain>
             <CardHeader plain color="primary">

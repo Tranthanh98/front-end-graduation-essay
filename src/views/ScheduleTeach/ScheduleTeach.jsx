@@ -47,53 +47,79 @@ import {
 import DateFnsUtils from '@date-io/date-fns';
 import { withRouter } from "react-router-dom";
 import BaseComponent from '../../core/BaseComponent/BaseComponent';
+import * as httpClient from '../../core/HttpClient';
+import { getDayOfYear } from "date-fns/esm";
 
 class ScheduleTeach extends BaseComponent {
   constructor(props){
     super(props);
     this.state = {
-      scheduleTeach : [
-        {
-          id : 0,
-          time : "Đang diễn ra",
-          classRoom : "B201",
-          quantityStudent : 50,
-          nameSubject : "Lập trình căn bản"
-        },
-        {
-          id : 1,
-          time : "10:20",
-          classRoom : "F206",
-          quantityStudent : 50,
-          nameSubject : "Hệ Thống Nhúng"
-        },
-        {
-          id : 2,
-          time : "12:20",
-          classRoom : "C101",
-          quantityStudent : 50,
-          nameSubject : "Java"
-        },
-        {
-          id : 3,
-          time : "14:20",
-          classRoom : "C101",
-          quantityStudent : 50,
-          nameSubject : "C#"
-        }
-      ],
-      nowDate : new Date()
+      scheduleTeach : [],
+      nowDate : new Date(),
+      errorMessage : ""
     }
   }
-  _onChangeDate = (dateValue)=>{
+  async componentDidMount(){
+    let a = this.formatDateTime(new Date);
+    console.log('a test:', a);
+    let data = {
+      teacherId : this.getUserId(),
+      date : this.formatDateTime(new Date, "YYYY-MM-DD")
+    }
+    this.updateStateLoader(true);
+    let response = await httpClient.sendPost('/get-class-by-day', data);
+    this.updateStateLoader(false);
+    if(!this.validateApi(response)){
+      const {errorMessage} = response.data;
+      console.log("error get class :", errorMessage);
+      
+      this.setState({
+        errorMessage
+      })
+      return;
+    }
+    this.setState({
+      scheduleTeach :  response.data.Data
+    })
+    console.log('data :', response);
+  }
+  _onChangeDate = async(dateValue)=>{
     this.setState({
       nowDate : dateValue
     })
+    let day = this.formatDateTime(dateValue, "YYYY-MM-DD");
+    console.log('day api :', day);
+    let data = {
+      teacherId : this.getUserId(),
+      date : day
+    }
+    this.updateStateLoader(true);
+    let response = await httpClient.sendPost('/get-class-by-day', data);
+    this.updateStateLoader(false);
+    if(!this.validateApi(response)){
+      const {errorMessage} = response.data;
+      console.log("error get class :", errorMessage);
+      
+      this.setState({
+        errorMessage
+      })
+      return;
+    }
+    console.log("response success : ", response)
+    this.setState({
+      scheduleTeach :  response.data.Data,
+      errorMessage : ""
+    })
+    
     console.log('date ', dateValue);
   }
-  joinClassRoom = (valueId)=>{
-    console.log("value :", valueId);
-    this.goTo('/teacher/diem-danh', valueId);
+  joinClassRoom = (id, date)=>{
+    if(new Date() < new Date(date)){
+      alert("Bạn không thể tham gia lớp học này vào ngày hôm nay !");
+      return;
+    }
+    console.log("value :", {id});
+    this.goTo('/teacher/diem-danh', {id});
     // return (
     //   <Redirect to="/teacher/diem-danh"/>
     // )
@@ -118,47 +144,52 @@ class ScheduleTeach extends BaseComponent {
                   }}
                 />
             </MuiPickersUtilsProvider>
-            {/* <DatePicker
-              selected={this.state.nowDate}
-              onChange={this._onChangeDate}
-            /> */}
           </GridItem>
           {
-            this.state.scheduleTeach.map((item, index) => {
-              let color = "warning";
-              if(index % 2 == 0){
-                color = "success"
-              }
-              else if(index % 3 ==0){
-                color = "danger"
-              }
-              return (
-                <GridItem key={index + item.id} xs={12} sm={6} md={3}>
-                  <div className={classes.card} onClick={() => this.joinClassRoom(item.id)}>
-                    <Card>
-                      <CardHeader color={color} stats icon>
-                        <CardIcon color={color}>
-                          {/* <Icon>content_copy</Icon> */}
-                          <Typography component="h2" variant={item.time.length > 9 ? "h6" : "h4"}>{item.time}</Typography>
-                        </CardIcon>
-                        <p className={classes.cardCategory}>Phòng: {item.classRoom}</p>
-                        <strong style={{color:"black"}}>Sĩ số: {item.quantityStudent}</strong>
-                        <h3 className={classes.cardTitle}>
-                          {item.nameSubject}
-                        </h3>
-                      </CardHeader>
-                      <CardFooter stats>
-                        <div className={classes.stats}>
-                          <Typography>
-                            Click để tham gia lớp học
-                          </Typography>
-                        </div>
-                      </CardFooter>
-                    </Card>
-                  </div>
-                </GridItem>
-              )
-            })
+            this.state.errorMessage !== "" ? (
+              <Typography color="error">
+                {this.state.errorMessage}
+              </Typography>
+            ) : (
+                this.state.scheduleTeach.map((item, index) => {
+                  let color = "warning";
+                  if(index % 2 == 0){
+                    color = "success"
+                  }
+                  else if(index % 3 ==0){
+                    color = "danger"
+                  }
+                  return (
+                    <GridItem key={index + item.id} xs={12} sm={6} md={3}>
+                      <div className={classes.card} onClick={() => this.joinClassRoom(item.ma_mon, item.date)}>
+                        <Card>
+                          <CardHeader color={color} stats icon>
+                            <CardIcon color={color}>
+                              {/* <Icon>content_copy</Icon> */}
+                              <Typography component="h2" variant={item.time.length > 9 ? "h6" : "h4"}>{item.time}</Typography>
+                            </CardIcon>
+                            
+                          </CardHeader>
+                          <div className={classes.paddingCardContent}>
+                            <p className={classes.cardCategory}>Phòng: {item.phong_hoc}</p>
+                            <strong style={{color:"black"}}>Sĩ số: {item.totalSV}</strong>
+                            <h3 className={classes.cardTitle}>
+                              {item.ten_mon}
+                            </h3>
+                          </div>
+                          <CardFooter stats>
+                            <div className={classes.stats}>
+                              <Typography>
+                                Click để tham gia lớp học
+                              </Typography>
+                            </div>
+                          </CardFooter>
+                        </Card>
+                      </div>
+                    </GridItem>
+                  )
+                })
+            )
           }
         </GridContainer>
         <GridContainer>
@@ -307,6 +338,9 @@ class ScheduleTeach extends BaseComponent {
 const styleLocal = {
   card : {
     cursor : "pointer"
+  },
+  paddingCardContent : {
+    padding : "5px"
   },
   ...styles
 }

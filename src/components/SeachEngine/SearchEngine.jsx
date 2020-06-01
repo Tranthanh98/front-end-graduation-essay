@@ -55,6 +55,7 @@ class SearchEngine extends React.Component{
         value : item.ten_mon,
         isShowSelect : false
       })
+      this.props.updateDataClass(item)
     }
     render(){
       const {classes} = this.props;

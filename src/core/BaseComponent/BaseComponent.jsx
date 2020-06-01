@@ -4,6 +4,7 @@ import {sensitiveStorage} from '../services/SensitiveStorage';
 // import { css } from "@emotion/core";
 import Backdrop from '@material-ui/core/Backdrop';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import moment from 'moment';
 
 
 class BaseComponent extends React.Component{
@@ -28,7 +29,10 @@ class BaseComponent extends React.Component{
         throw("method render body must be override");
     }
     goTo = (url, param = "") =>{
-        this.props.history.push(`${url}/${param}`);
+        this.props.history.push({
+            pathname : url,
+            state : param
+        });
     }
     login = (response) =>{
         sensitiveStorage.setUserName(response.data.Data.name);
@@ -40,6 +44,9 @@ class BaseComponent extends React.Component{
         sensitiveStorage.removeUserName();
         sensitiveStorage.removeToken();
         sensitiveStorage.removeUserId();
+        if(localStorage.getItem("LOGIN_TEACHER")){
+            localStorage.removeItem("LOGIN_TEACHER")
+        }
     }
     validateApi = (response) =>{
         if(response.data.isSuccess){
@@ -51,6 +58,12 @@ class BaseComponent extends React.Component{
         this.setState({
             statusLoader : status
         })
+    }
+    getUserId(){
+        return sensitiveStorage.getUserId();
+    }
+    formatDateTime =(value,formatType = "DD/MM/YYYY")=>{
+        return moment(value).format(formatType);
     }
 }
 export default (BaseComponent);

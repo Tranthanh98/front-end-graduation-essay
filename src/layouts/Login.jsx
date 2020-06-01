@@ -77,7 +77,7 @@ class Login extends BaseComponent {
         password : "",
         error : false,
         errorMessage : "",
-        // statusLoader : false
+        isRemember : false
       }
     }
   
@@ -85,7 +85,7 @@ class Login extends BaseComponent {
       // this.setState({
       //   token : sensitiveStorage.getToken() ? sensitiveStorage.getToken() : null
       // })
-      if(sensitiveStorage.getToken() != null){
+      if(sensitiveStorage.getToken() != null || localStorage.getItem("LOGIN_TEACHER")){
         this.props.history.push({pathname : "/teacher/lich-giang-day"});
       }
     }
@@ -100,6 +100,12 @@ class Login extends BaseComponent {
       if(this.validateApi(response)){
         this.login(response);
         this.props.updateState(response.data.Data.id, response.data.Data.token)
+        if(this.state.isRemember ===true){
+          localStorage.setItem("LOGIN_TEACHER", response.data.Data.token);
+        }
+        else{
+          localStorage.removeItem("LOGIN_TEACHER");
+        }
         this.goTo('/teacher/lich-giang-day');
       }
       else{
@@ -118,6 +124,11 @@ class Login extends BaseComponent {
     _hanldeOnChangePassword = (e)=>{
       this.setState({
         password : e.target.value
+      })
+    }
+    _hanledRemember = (e) =>{
+      this.setState({
+        isRemember : !this.state.isRemember
       })
     }
     renderBody(){
@@ -169,7 +180,7 @@ class Login extends BaseComponent {
                       onChange={(e)=> this._hanldeOnChangePassword(e)}
                     />
                     <FormControlLabel
-                      control={<Checkbox value="remember" color="primary" />}
+                      control={<Checkbox value={this.state.isRemember} onChange={(e)=> this._hanledRemember(e)} color="primary" />}
                       label="Ghi nhớ"
                     />
                     <Button

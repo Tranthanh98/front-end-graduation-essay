@@ -113,13 +113,13 @@ class ScheduleTeach extends BaseComponent {
     
     console.log('date ', dateValue);
   }
-  joinClassRoom = (id, date)=>{
+  joinClassRoom = (id,tenMon, date)=>{
     if(new Date() < new Date(date)){
       alert("Bạn không thể tham gia lớp học này vào ngày hôm nay !");
       return;
     }
-    console.log("value :", {id});
-    this.goTo('/teacher/diem-danh', {id});
+    // console.log("value :", {id, tenMon});
+    this.goTo('/teacher/diem-danh', {id, tenMon});
     // return (
     //   <Redirect to="/teacher/diem-danh"/>
     // )
@@ -161,7 +161,7 @@ class ScheduleTeach extends BaseComponent {
                   }
                   return (
                     <GridItem key={index + item.id} xs={12} sm={6} md={3}>
-                      <div className={classes.card} onClick={() => this.joinClassRoom(item.ma_mon, item.date)}>
+                      <div className={classes.card} onClick={() => this.joinClassRoom(item.ma_mon,item.ten_mon, item.date)}>
                         <Card>
                           <CardHeader color={color} stats icon>
                             <CardIcon color={color}>

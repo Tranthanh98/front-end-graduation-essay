@@ -55,7 +55,8 @@ class RollCall extends BaseComponent {
       isShowSearchClass : false,
       errorMessage : "",
       isShowTable : false,
-      fileImage : null
+      fileImage : null,
+      tenMon : ""
     }
   }
   async componentDidMount(){
@@ -68,12 +69,29 @@ class RollCall extends BaseComponent {
         date : this.formatDateTime(new Date(), "YYYY-MM-DD")
       }
       console.log('data send get student :', data);
+      this.updateStateLoader(true);
       let response = await httpClient.sendPost('/get-student-by-class', data);
+      this.updateStateLoader(false);
+      if(!this.validateApi(response)){
+        const {errorMessage} = response.data;
+        const isShowTable = response.data.isSuccess;
+        console.log('errorMessage :', errorMessage);
+        this.setState({
+          errorMessage,
+          isShowTable
+        });
+      }
+      else{
+        this.setState({
+          tabledData : response.data.Data,
+          isShowTable : true
+        })
+      }
       console.log('response student :', response);
-      this.setState({
-        tabledData : response.data.Data,
-        isShowTable : true
-      })
+      // this.setState({
+      //   tabledData : response.data.Data,
+      //   isShowTable : true
+      // })
     }
     else{
       this.setState({
@@ -82,6 +100,9 @@ class RollCall extends BaseComponent {
     }
   }
   getDataStudentOfClass = async(item) =>{
+    this.setState({
+      tenMon : item.ten_mon
+    })
     let data = {
       MaMon : item.ma_mon,
       teacherId : this.getUserId(),
@@ -142,19 +163,40 @@ class RollCall extends BaseComponent {
       ]
     })
   }
-  loadImage = (image) => {
+  loadImage = async(image) => {
     this.setState({
       fileImage : image
     })
     let listMssv = this.state.tabledData.map(item =>{
       return item.Mssv
     });
-    
+    let data = {
+      stringImage : image,
+      listMssv : listMssv,
+      Mssv : null
+    }
+    let response = await httpClient.sendPost('roll-call-student', data);
+    console.log('face recognition : ', response);
+    await this.setState({
+      fileImage : response.data.Data.imageAfterRecognition
+    })
   }
   renderBody(){
     const {classes} = this.props;
     return (
       <GridContainer>
+        <GridItem xs={12} sm={12} md={12}>
+          <Card plain>
+            <CardHeader plain color="primary">
+              <h4 className={classes.cardTitleWhite}>
+                Môn học : {this.props.location.state ? this.props.location.state.tenMon : this.state.tenMon}
+              </h4>
+              <p className={classes.cardCategoryWhite}>
+                Here is a subtitle for this table
+              </p>
+            </CardHeader>
+          </Card>
+        </GridItem>
         {
           this.state.isShowSearchClass == true ? (
             <>
@@ -199,45 +241,6 @@ class RollCall extends BaseComponent {
             </Typography>
           )
         }
-        
-        <GridItem xs={12} sm={12} md={12}>
-          <Card plain>
-            <CardHeader plain color="primary">
-              <h4 className={classes.cardTitleWhite}>
-                Table on Plain Background
-              </h4>
-              <p className={classes.cardCategoryWhite}>
-                Here is a subtitle for this table
-              </p>
-            </CardHeader>
-            <CardBody>
-              <Table
-                tableHeaderColor="primary"
-                tableHead={["ID", "Name", "Country", "City", "Salary"]}
-                tableData={[
-                  ["1", "Dakota Rice", "$36,738", "Niger", "Oud-Turnhout"],
-                  ["2", "Minerva Hooper", "$23,789", "Curaçao", "Sinaai-Waas"],
-                  ["3", "Sage Rodriguez", "$56,142", "Netherlands", "Baileux"],
-                  [
-                    "4",
-                    "Philip Chaney",
-                    "$38,735",
-                    "Korea, South",
-                    "Overland Park"
-                  ],
-                  [
-                    "5",
-                    "Doris Greene",
-                    "$63,542",
-                    "Malawi",
-                    "Feldkirchen in Kärnten"
-                  ],
-                  ["6", "Mason Porter", "$78,615", "Chile", "Gloucester"]
-                ]}
-              />
-            </CardBody>
-          </Card>
-        </GridItem>
       </GridContainer>
     );
   }

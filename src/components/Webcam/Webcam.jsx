@@ -27,6 +27,10 @@ class WebcamRollCall extends BaseComponent{
         // })
         this.props.updateImage(imageSrc);
       };
+    captureForTraining = () =>{
+        const imageSrc = this.webcam.getScreenshot();
+        this.props.setImage(imageSrc);
+    }
     renderBody(){
         const videoConstraints = {
             width: 1280,

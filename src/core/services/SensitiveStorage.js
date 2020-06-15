@@ -52,6 +52,15 @@ class SensitiveStorage {
   removeUserName(){
     storage.removeItem("USERNAME");
   }
+  setClassRoom(classRoom){
+    storage.setItem("CLASS", classRoom);
+  }
+  getClassRoom(){
+    return storage.getItem("CLASS");
+  }
+  removeClassRoom(){
+    storage.removeItem("CLASS");
+  }
 }
 export const sensitiveStorage = new SensitiveStorage();
 

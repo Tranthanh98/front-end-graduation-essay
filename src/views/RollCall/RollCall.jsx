@@ -15,6 +15,7 @@ import BaseComponent from '../../core/BaseComponent/BaseComponent';
 import * as httpClient from '../../core/HttpClient';
 import Checkbox from '@material-ui/core/Checkbox';
 import WebcamRollCall from '../../components/Webcam/Webcam';
+import lodash from 'lodash';
 
 const styles = {
   cardCategoryWhite: {
@@ -50,12 +51,13 @@ class RollCall extends BaseComponent {
   constructor(props){
     super(props);
     this.state = {
-      maLop : "",
+      MaMon : "",
       tabledData : [],
       isShowSearchClass : false,
       errorMessage : "",
       isShowTable : false,
       fileImage : null,
+      fileImageForTrain : null,
       tenMon : ""
     }
   }
@@ -101,7 +103,8 @@ class RollCall extends BaseComponent {
   }
   getDataStudentOfClass = async(item) =>{
     this.setState({
-      tenMon : item.ten_mon
+      tenMon : item.ten_mon,
+      MaMon : item.ma_mon
     })
     let data = {
       MaMon : item.ma_mon,
@@ -131,7 +134,7 @@ class RollCall extends BaseComponent {
   _trainingFace = async(item) =>{
     let data = {
       Mssv : item.Mssv,
-      stringImage : this.state.fileImage
+      stringImage : this.state.fileImageForTrain
     }
     this.updateStateLoader(true);
     let response = await httpClient.sendPost('/training-face', data);
@@ -143,6 +146,30 @@ class RollCall extends BaseComponent {
     }
     console.log('training face res :', response);
   }
+  _rollcallStudent= async(item)=>{
+    let data = {
+      MaMon : this.props.location.state ? this.props.location.state.id : this.state.MaMon,
+      teacherId : this.getUserId(),
+      date : this.formatDateTime(new Date(), "YYYY-MM-DD"),
+      mssv : item.Mssv
+    }
+    this.updateStateLoader(true);
+    let response = await httpClient.sendPost('/roll-call-student', data);
+    this.updateStateLoader(false);
+    if(!this.validateApi(response)){
+      this.setState({
+        errorMessage : response.data.errorMessage,
+        isShowTable : false
+      })
+
+    }
+    else{
+      this.setState({
+        tabledData : response.data.Data,
+        isShowTable : true
+      })
+    }
+  }
   _renderTableRow = () => {
     return this.state.tabledData.map((item,index)=>{
       return [
@@ -150,10 +177,12 @@ class RollCall extends BaseComponent {
         <Typography>{item.NameStudent}</Typography>,
         <Typography>
           <Checkbox
+            checked={item.isRollCalled == 1 ? true : false}
+            onChange={() => this._rollcallStudent(item)}
             color="primary"/>
         </Typography>,
         <Typography>
-          6
+          {item.totalFaceTrained}
         </Typography>,
         <Typography>
           <Button disabled={this.state.fileImage !== null ? false : true} onClick={()=>this._trainingFace(item)} color="secondary">
@@ -165,7 +194,8 @@ class RollCall extends BaseComponent {
   }
   loadImage = async(image) => {
     this.setState({
-      fileImage : image
+      fileImage : image,
+      fileImageForTrain : image
     })
     let listMssv = this.state.tabledData.map(item =>{
       return item.Mssv
@@ -173,13 +203,25 @@ class RollCall extends BaseComponent {
     let data = {
       stringImage : image,
       listMssv : listMssv,
-      Mssv : null
+      Mssv : null,
+      MaMon : this.props.location.state ? this.props.location.state.id : this.state.MaMon,
+      teacherId : this.getUserId(),
+      date : this.formatDateTime(new Date(), "YYYY-MM-DD"),
     }
-    let response = await httpClient.sendPost('roll-call-student', data);
+    let response = await httpClient.sendPost('recognition-student', data);
     console.log('face recognition : ', response);
-    await this.setState({
-      fileImage : response.data.Data.imageAfterRecognition
-    })
+    if(!this.validateApi(response)){
+      this.setState({
+        errorMessage : response.data.errorMessage
+      })
+    }
+    else{
+      await this.setState({
+        fileImage : response.data.Data.imageAfterRecognition,
+        tabledData : response.data.Data.listStudentRollCall
+      })
+    }
+    
   }
   renderBody(){
     const {classes} = this.props;
@@ -192,7 +234,7 @@ class RollCall extends BaseComponent {
                 Môn học : {this.props.location.state ? this.props.location.state.tenMon : this.state.tenMon}
               </h4>
               <p className={classes.cardCategoryWhite}>
-                Here is a subtitle for this table
+                Điểm danh
               </p>
             </CardHeader>
           </Card>
@@ -220,9 +262,9 @@ class RollCall extends BaseComponent {
               <GridItem xs={12} sm={12} md={12}>
                   <Card>
                     <CardHeader color="primary">
-                      <h4 className={classes.cardTitleWhite}>Simple Table</h4>
+                      <h4 className={classes.cardTitleWhite}>Danh sách sinh viên của lớp học</h4>
                       <p className={classes.cardCategoryWhite}>
-                        Here is a subtitle for this table
+                        Lưu ý: sinh viên chỉ được "Training" khuôn mặt khi trong ảnh có duy nhất 01 khuôn mặt
                       </p>
                     </CardHeader>
                     <CardBody>

@@ -20,17 +20,23 @@ import bgImage from "assets/img/sidebar-2.jpg";
 import logo from "assets/img/logo-khtn.png";
 import localStorage from '../core/services/LocalStorage';
 import {sensitiveStorage} from '../core/services/SensitiveStorage';
+import * as httpClient from '../core/HttpClient';
+import BaseComponent from '../core/BaseComponent/BaseComponent';
+import {EnumStatusClass} from '../core/Enum';
+
 let ps;
-class Admin extends React.Component {
+class Admin extends BaseComponent {
   constructor(props){
     super(props);
     this.state = {
       image : bgImage,
       color : "blue",
       fixedClasses : "dropdown",
-      mobileOpen : false
+      mobileOpen : false,
+      nowClass : null
     }
     this.mainPanel = React.createRef();
+    // this.scheduleRefs = React.createRef();
   }
   switchRoutes =() => {
     return(
@@ -47,7 +53,10 @@ class Admin extends React.Component {
             return (
               <Route
                 path={prop.layout + prop.path}
-                render={(props) => <Component {...props} color={this.state.color}/>}
+                render={(props) => <Component {...props} 
+                                    nowClass={this.state.nowClass} 
+                                    updateNowClass={this.updateNowClass}
+                                    color={this.state.color}/>}
                 key={key}
               />
             );
@@ -95,7 +104,7 @@ class Admin extends React.Component {
       })
     }
   };
-  componentDidMount(){
+  async componentDidMount(){
     if (navigator.platform.indexOf("Win") > -1) {
       ps = new PerfectScrollbar(this.mainPanel.current, {
         suppressScrollX: true,
@@ -104,6 +113,25 @@ class Admin extends React.Component {
       document.body.style.overflow = "hidden";
     }
     window.addEventListener("resize", this.resizeFunction);
+
+    if(localStorage.getItem("DAY_HOC")){
+      let date = new Date(localStorage.getItem("DAY_HOC").date);
+      let nowDate = new Date(this.getDate())
+      if(date < nowDate){
+        
+        let data = {
+          idClass : localStorage.getItem("DAY_HOC").id,
+          status : EnumStatusClass.closed,
+          teacherId : this.getUserId(),
+          date : this.formatDateTime(new Date(localStorage.getItem("DAY_HOC").date), "YYYY-MM-DD")
+        }
+        let response = await httpClient.sendPost('/update-status-class', data);
+        if(this.validateApi(response)){
+          localStorage.removeItem("DAY_HOC");
+        }
+        
+      }
+    }
 
     let self = this;
     return function cleanup() {
@@ -114,7 +142,24 @@ class Admin extends React.Component {
       window.removeEventListener("resize", self.resizeFunction);
     };
   }
-  render(){
+  updateNowClass = async(value) =>{
+    if(value == null){
+      let data = {
+        idClass : localStorage.getItem("DAY_HOC").id,
+        status : EnumStatusClass.closed,
+        teacherId : this.getUserId(),
+        date : this.formatDateTime(new Date(localStorage.getItem("DAY_HOC").date), "YYYY-MM-DD")
+      }
+      let response = await httpClient.sendPost('/update-status-class', data);
+      if(this.validateApi(response)){
+        localStorage.removeItem("DAY_HOC");
+      }
+    }
+    this.setState({
+      nowClass : value
+    })
+  }
+  renderBody(){
     const {classes }= this.props;
     return (
       <div className={classes.wrapper}>
@@ -131,6 +176,8 @@ class Admin extends React.Component {
         <div className={classes.mainPanel} ref={this.mainPanel}>
           <Navbar
             routes={routes}
+            nowClass={this.state.nowClass}
+            updateNowClass={this.updateNowClass}
             handleDrawerToggle={this.handleDrawerToggle}
           />
 

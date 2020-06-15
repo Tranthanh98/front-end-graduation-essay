@@ -1,44 +1,43 @@
 import React from "react";
 // react plugin for creating charts
-import ChartistGraph from "react-chartist";
+// import ChartistGraph from "react-chartist";
 // @material-ui/core
 import { withStyles } from "@material-ui/core/styles";
-import Icon from "@material-ui/core/Icon";
+// import Icon from "@material-ui/core/Icon";
 // @material-ui/icons
-import Store from "@material-ui/icons/Store";
-import Warning from "@material-ui/icons/Warning";
-import DateRange from "@material-ui/icons/DateRange";
-import LocalOffer from "@material-ui/icons/LocalOffer";
-import Update from "@material-ui/icons/Update";
-import ArrowUpward from "@material-ui/icons/ArrowUpward";
-import AccessTime from "@material-ui/icons/AccessTime";
-import Accessibility from "@material-ui/icons/Accessibility";
-import BugReport from "@material-ui/icons/BugReport";
-import Code from "@material-ui/icons/Code";
-import Cloud from "@material-ui/icons/Cloud";
+// import Store from "@material-ui/icons/Store";
+// import Warning from "@material-ui/icons/Warning";
+// import DateRange from "@material-ui/icons/DateRange";
+// import LocalOffer from "@material-ui/icons/LocalOffer";
+// import Update from "@material-ui/icons/Update";
+// import ArrowUpward from "@material-ui/icons/ArrowUpward";
+// import AccessTime from "@material-ui/icons/AccessTime";
+// import Accessibility from "@material-ui/icons/Accessibility";
+// import BugReport from "@material-ui/icons/BugReport";
+// import Code from "@material-ui/icons/Code";
+// import Cloud from "@material-ui/icons/Cloud";
 // core components
 import GridItem from "components/Grid/GridItem.js";
 import GridContainer from "components/Grid/GridContainer.js";
-import Table from "components/Table/Table.js";
-import Tasks from "components/Tasks/Tasks.js";
-import CustomTabs from "components/CustomTabs/CustomTabs.js";
-import Danger from "components/Typography/Danger.js";
+// import Table from "components/Table/Table.js";
+// import Tasks from "components/Tasks/Tasks.js";
+// import CustomTabs from "components/CustomTabs/CustomTabs.js";
+// import Danger from "components/Typography/Danger.js";
 import Card from "components/Card/Card.js";
 import CardHeader from "components/Card/CardHeader.js";
 import CardIcon from "components/Card/CardIcon.js";
-import CardBody from "components/Card/CardBody.js";
+// import CardBody from "components/Card/CardBody.js";
 import CardFooter from "components/Card/CardFooter.js";
 
-import { bugs, website, server } from "variables/general.js";
+// import { bugs, website, server } from "variables/general.js";
 
-import {
-  dailySalesChart,
-  emailsSubscriptionChart,
-  completedTasksChart
-} from "variables/charts.js";
+// import {
+//   dailySalesChart
+// } from "variables/charts.js";
 
 import styles from "assets/jss/material-dashboard-react/views/dashboardStyle.js";
 import { Typography } from "@material-ui/core";
+import localStorage from '../../core/services/LocalStorage';
 
 import {
   MuiPickersUtilsProvider,
@@ -49,6 +48,8 @@ import { withRouter } from "react-router-dom";
 import BaseComponent from '../../core/BaseComponent/BaseComponent';
 import * as httpClient from '../../core/HttpClient';
 import { getDayOfYear } from "date-fns/esm";
+import {EnumStatusClass} from '../../core/Enum';
+
 
 class ScheduleTeach extends BaseComponent {
   constructor(props){
@@ -113,13 +114,57 @@ class ScheduleTeach extends BaseComponent {
     
     console.log('date ', dateValue);
   }
-  joinClassRoom = (id,tenMon, date)=>{
-    if(new Date() < new Date(date)){
+  joinClassRoom = async(item)=>{
+    const {ma_mon, ten_mon, date} = item;
+    if(item.status == 3){
       alert("Bạn không thể tham gia lớp học này vào ngày hôm nay !");
       return;
     }
-    // console.log("value :", {id, tenMon});
-    this.goTo('/teacher/diem-danh', {id, tenMon});
+    else if(item.status == 2){
+      alert("Lớp học đang mở!");
+      return;
+    }
+    else{
+      let check = window.confirm("Bạn muốn mở lớp học này ?");
+      if(check){
+        const data = {
+          idClass : item.id,
+          status : EnumStatusClass.happenning,
+          teacherId : this.getUserId(),
+          date : this.formatDateTime(new Date, "YYYY-MM-DD")
+        }
+        this.updateStateLoader(true);
+        let response = await httpClient.sendPost('/update-status-class', data);
+        console.log("res update status : ", response);
+        
+        if(!this.validateApi(response)){
+          this.setState({
+            errorMessage : response.data.errorMessage
+          });
+          return;
+        }
+        this.setState({
+          scheduleTeach : response.data.Data
+        })
+        let dataGetStudent = {
+          MaMon : ma_mon,
+          teacherId : this.getUserId(),
+          date : this.formatDateTime(new Date(), "YYYY-MM-DD")
+        }
+        let responseStudent = await httpClient.sendPost('/get-student-rollcall', dataGetStudent);
+        this.updateStateLoader(false);
+        
+        item.listStudent = responseStudent.data.Data
+        localStorage.setItem('DAY_HOC', item);
+        this.props.updateNowClass(item);
+        console.log('item thanh test :', item);
+        this.goTo('/teacher/diem-danh', {id : ma_mon, tenMon : ten_mon, idLopHoc : item.id});
+      }
+      else{
+        return;
+      }
+    }
+    
     // return (
     //   <Redirect to="/teacher/diem-danh"/>
     // )
@@ -161,7 +206,7 @@ class ScheduleTeach extends BaseComponent {
                   }
                   return (
                     <GridItem key={index + item.id} xs={12} sm={6} md={3}>
-                      <div className={classes.card} onClick={() => this.joinClassRoom(item.ma_mon,item.ten_mon, item.date)}>
+                      <div className={classes.card} onClick={() => this.joinClassRoom(item)}>
                         <Card>
                           <CardHeader color={color} stats icon>
                             <CardIcon color={color}>
@@ -176,6 +221,7 @@ class ScheduleTeach extends BaseComponent {
                             <h3 className={classes.cardTitle}>
                               {item.ten_mon}
                             </h3>
+                            <Typography>Trạng thái: {EnumStatusClass[item.status]}</Typography>
                           </div>
                           <CardFooter stats>
                             <div className={classes.stats}>
@@ -193,7 +239,11 @@ class ScheduleTeach extends BaseComponent {
           }
         </GridContainer>
         <GridContainer>
-          <GridItem xs={12} sm={12} md={4}>
+          <GridItem xs={12} sm={12} md={12}>
+            
+          </GridItem>
+          
+          {/* <GridItem xs={12} sm={12} md={4}>
             <Card chart>
               <CardHeader color="success">
                 <ChartistGraph
@@ -219,7 +269,7 @@ class ScheduleTeach extends BaseComponent {
                 </div>
               </CardFooter>
             </Card>
-          </GridItem>
+          </GridItem> */}
           {/* <GridItem xs={12} sm={12} md={4}>
             <Card chart>
               <CardHeader color="warning">

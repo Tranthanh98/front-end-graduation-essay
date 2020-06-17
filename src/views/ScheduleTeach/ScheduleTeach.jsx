@@ -1,44 +1,43 @@
 import React from "react";
 // react plugin for creating charts
-import ChartistGraph from "react-chartist";
+// import ChartistGraph from "react-chartist";
 // @material-ui/core
 import { withStyles } from "@material-ui/core/styles";
-import Icon from "@material-ui/core/Icon";
+// import Icon from "@material-ui/core/Icon";
 // @material-ui/icons
-import Store from "@material-ui/icons/Store";
-import Warning from "@material-ui/icons/Warning";
-import DateRange from "@material-ui/icons/DateRange";
-import LocalOffer from "@material-ui/icons/LocalOffer";
-import Update from "@material-ui/icons/Update";
-import ArrowUpward from "@material-ui/icons/ArrowUpward";
-import AccessTime from "@material-ui/icons/AccessTime";
-import Accessibility from "@material-ui/icons/Accessibility";
-import BugReport from "@material-ui/icons/BugReport";
-import Code from "@material-ui/icons/Code";
-import Cloud from "@material-ui/icons/Cloud";
+// import Store from "@material-ui/icons/Store";
+// import Warning from "@material-ui/icons/Warning";
+// import DateRange from "@material-ui/icons/DateRange";
+// import LocalOffer from "@material-ui/icons/LocalOffer";
+// import Update from "@material-ui/icons/Update";
+// import ArrowUpward from "@material-ui/icons/ArrowUpward";
+// import AccessTime from "@material-ui/icons/AccessTime";
+// import Accessibility from "@material-ui/icons/Accessibility";
+// import BugReport from "@material-ui/icons/BugReport";
+// import Code from "@material-ui/icons/Code";
+// import Cloud from "@material-ui/icons/Cloud";
 // core components
 import GridItem from "components/Grid/GridItem.js";
 import GridContainer from "components/Grid/GridContainer.js";
-import Table from "components/Table/Table.js";
-import Tasks from "components/Tasks/Tasks.js";
-import CustomTabs from "components/CustomTabs/CustomTabs.js";
-import Danger from "components/Typography/Danger.js";
+// import Table from "components/Table/Table.js";
+// import Tasks from "components/Tasks/Tasks.js";
+// import CustomTabs from "components/CustomTabs/CustomTabs.js";
+// import Danger from "components/Typography/Danger.js";
 import Card from "components/Card/Card.js";
 import CardHeader from "components/Card/CardHeader.js";
 import CardIcon from "components/Card/CardIcon.js";
-import CardBody from "components/Card/CardBody.js";
+// import CardBody from "components/Card/CardBody.js";
 import CardFooter from "components/Card/CardFooter.js";
 
-import { bugs, website, server } from "variables/general.js";
+// import { bugs, website, server } from "variables/general.js";
 
-import {
-  dailySalesChart,
-  emailsSubscriptionChart,
-  completedTasksChart
-} from "variables/charts.js";
+// import {
+//   dailySalesChart
+// } from "variables/charts.js";
 
 import styles from "assets/jss/material-dashboard-react/views/dashboardStyle.js";
 import { Typography } from "@material-ui/core";
+import localStorage from '../../core/services/LocalStorage';
 
 import {
   MuiPickersUtilsProvider,
@@ -49,6 +48,9 @@ import { withRouter } from "react-router-dom";
 import BaseComponent from '../../core/BaseComponent/BaseComponent';
 import * as httpClient from '../../core/HttpClient';
 import { getDayOfYear } from "date-fns/esm";
+import {EnumStatusClass} from '../../core/Enum';
+import Table from "components/Table/Table.js";
+
 
 class ScheduleTeach extends BaseComponent {
   constructor(props){
@@ -56,32 +58,27 @@ class ScheduleTeach extends BaseComponent {
     this.state = {
       scheduleTeach : [],
       nowDate : new Date(),
-      errorMessage : ""
+      errorMessage : "",
+      dataAllClass : []
     }
   }
   async componentDidMount(){
-    let a = this.formatDateTime(new Date);
-    console.log('a test:', a);
+    await Promise.all([
+      this._onChangeDate(new Date),
+      this.getAllClassOfTeacher()
+    ])
+  }
+  getAllClassOfTeacher = async() => {
     let data = {
-      teacherId : this.getUserId(),
-      date : this.formatDateTime(new Date, "YYYY-MM-DD")
+      teacherId : this.getUserId()
     }
-    this.updateStateLoader(true);
-    let response = await httpClient.sendPost('/get-class-by-day', data);
-    this.updateStateLoader(false);
-    if(!this.validateApi(response)){
-      const {errorMessage} = response.data;
-      console.log("error get class :", errorMessage);
-      
+    let response = await httpClient.sendPost('/get-all-class-of-teacher', data);
+    if(this.validateApi(response)){
       this.setState({
-        errorMessage
+        dataAllClass : response.data.Data
       })
-      return;
     }
-    this.setState({
-      scheduleTeach :  response.data.Data
-    })
-    console.log('data :', response);
+    console.log("gett all class", response);
   }
   _onChangeDate = async(dateValue)=>{
     this.setState({
@@ -113,17 +110,71 @@ class ScheduleTeach extends BaseComponent {
     
     console.log('date ', dateValue);
   }
-  joinClassRoom = (id,tenMon, date)=>{
-    if(new Date() < new Date(date)){
+  _handleViewDetailClass = (item) =>{
+    this.goTo("/teacher/quan-ly-sinh-vien", {MaMon : item.maMon, tenMon : item.tenMon})
+  }
+  _renderTableRow = () =>{
+    const {classes} = this.props;
+    return this.state.dataAllClass.map((item, index)=>{
+      return [
+        <Typography>{item.maMon}</Typography>,
+        <Typography>{item.tenMon}</Typography>,
+        <Typography>{item.soBuoiDaDay}</Typography>,
+        <Typography>{item.totalStudent}</Typography>,
+        <Typography className={classes.hover} color="secondary" onClick={() => this._handleViewDetailClass(item)}>Xem chi tiết</Typography>
+      ]
+    })
+  }
+  joinClassRoom = async(item)=>{
+    const {ma_mon, ten_mon, date} = item;
+    if(item.status == 3){
       alert("Bạn không thể tham gia lớp học này vào ngày hôm nay !");
       return;
     }
-    // console.log("value :", {id, tenMon});
-    this.goTo('/teacher/diem-danh', {id, tenMon});
-    // return (
-    //   <Redirect to="/teacher/diem-danh"/>
-    // )
-    // this.props.history.push("/teacher/diem-danh/"+valueId)
+    else if(item.status == 2){
+      alert("Lớp học đang mở!");
+      return;
+    }
+    else{
+      let check = window.confirm("Bạn muốn mở lớp học này ?");
+      if(check){
+        const data = {
+          idClass : item.id,
+          status : EnumStatusClass.happenning,
+          teacherId : this.getUserId(),
+          date : this.formatDateTime(new Date, "YYYY-MM-DD")
+        }
+        this.updateStateLoader(true);
+        let response = await httpClient.sendPost('/update-status-class', data);
+        console.log("res update status : ", response);
+        
+        if(!this.validateApi(response)){
+          this.setState({
+            errorMessage : response.data.errorMessage
+          });
+          return;
+        }
+        this.setState({
+          scheduleTeach : response.data.Data
+        })
+        let dataGetStudent = {
+          MaMon : ma_mon,
+          teacherId : this.getUserId(),
+          date : this.formatDateTime(new Date(), "YYYY-MM-DD")
+        }
+        let responseStudent = await httpClient.sendPost('/get-student-rollcall', dataGetStudent);
+        this.updateStateLoader(false);
+          
+        item.listStudent = responseStudent.data.Data
+        localStorage.setItem('DAY_HOC', item);
+        this.props.updateNowClass(item);
+        console.log('item thanh test :', item);
+        this.goTo('/teacher/diem-danh', {id : ma_mon, tenMon : ten_mon, idLopHoc : item.id});
+      }
+      else{
+        return;
+      }
+    }
   }
   renderBody(){
     const {classes} = this.props;
@@ -161,7 +212,7 @@ class ScheduleTeach extends BaseComponent {
                   }
                   return (
                     <GridItem key={index + item.id} xs={12} sm={6} md={3}>
-                      <div className={classes.card} onClick={() => this.joinClassRoom(item.ma_mon,item.ten_mon, item.date)}>
+                      <div className={classes.card} onClick={() => this.joinClassRoom(item)}>
                         <Card>
                           <CardHeader color={color} stats icon>
                             <CardIcon color={color}>
@@ -176,6 +227,7 @@ class ScheduleTeach extends BaseComponent {
                             <h3 className={classes.cardTitle}>
                               {item.ten_mon}
                             </h3>
+                            <Typography>Trạng thái: {EnumStatusClass[item.status]}</Typography>
                           </div>
                           <CardFooter stats>
                             <div className={classes.stats}>
@@ -193,144 +245,17 @@ class ScheduleTeach extends BaseComponent {
           }
         </GridContainer>
         <GridContainer>
-          <GridItem xs={12} sm={12} md={4}>
-            <Card chart>
-              <CardHeader color="success">
-                <ChartistGraph
-                  className="ct-chart"
-                  data={dailySalesChart.data}
-                  type="Line"
-                  options={dailySalesChart.options}
-                  listener={dailySalesChart.animation}
+          <GridItem xs={12} sm={12} md={12}>
+            {this.state.dataAllClass != null ? (
+              <Table
+                tableHeaderColor="primary"
+                tableHead={["Mã Môn", "Tên Môn", "Đã dạy (buổi)", "Sĩ số", ""]}
+                tableData={this._renderTableRow()}
                 />
-              </CardHeader>
-              <CardBody>
-                <h4 className={classes.cardTitle}>Daily Sales</h4>
-                <p className={classes.cardCategory}>
-                  <span className={classes.successText}>
-                    <ArrowUpward className={classes.upArrowCardCategory} /> 55%
-                  </span>{" "}
-                  increase in today sales.
-                </p>
-              </CardBody>
-              <CardFooter chart>
-                <div className={classes.stats}>
-                  <AccessTime /> updated 4 minutes ago
-                </div>
-              </CardFooter>
-            </Card>
+            ) : (<Typography>Bạn không dạy lớp học nào!</Typography>)
+            }
           </GridItem>
-          {/* <GridItem xs={12} sm={12} md={4}>
-            <Card chart>
-              <CardHeader color="warning">
-                <ChartistGraph
-                  className="ct-chart"
-                  data={emailsSubscriptionChart.data}
-                  type="Bar"
-                  options={emailsSubscriptionChart.options}
-                  responsiveOptions={emailsSubscriptionChart.responsiveOptions}
-                  listener={emailsSubscriptionChart.animation}
-                />
-              </CardHeader>
-              <CardBody>
-                <h4 className={classes.cardTitle}>Email Subscriptions</h4>
-                <p className={classes.cardCategory}>Last Campaign Performance</p>
-              </CardBody>
-              <CardFooter chart>
-                <div className={classes.stats}>
-                  <AccessTime /> campaign sent 2 days ago
-                </div>
-              </CardFooter>
-            </Card>
-          </GridItem>
-          <GridItem xs={12} sm={12} md={4}>
-            <Card chart>
-              <CardHeader color="danger">
-                <ChartistGraph
-                  className="ct-chart"
-                  data={completedTasksChart.data}
-                  type="Line"
-                  options={completedTasksChart.options}
-                  listener={completedTasksChart.animation}
-                />
-              </CardHeader>
-              <CardBody>
-                <h4 className={classes.cardTitle}>Completed Tasks</h4>
-                <p className={classes.cardCategory}>Last Campaign Performance</p>
-              </CardBody>
-              <CardFooter chart>
-                <div className={classes.stats}>
-                  <AccessTime /> campaign sent 2 days ago
-                </div>
-              </CardFooter>
-            </Card>
-          </GridItem> */}
         </GridContainer>
-        {/* <GridContainer>
-          <GridItem xs={12} sm={12} md={6}>
-            <CustomTabs
-              title="Tasks:"
-              headerColor="primary"
-              tabs={[
-                {
-                  tabName: "Bugs",
-                  tabIcon: BugReport,
-                  tabContent: (
-                    <Tasks
-                      checkedIndexes={[0, 3]}
-                      tasksIndexes={[0, 1, 2, 3]}
-                      tasks={bugs}
-                    />
-                  )
-                },
-                {
-                  tabName: "Website",
-                  tabIcon: Code,
-                  tabContent: (
-                    <Tasks
-                      checkedIndexes={[0]}
-                      tasksIndexes={[0, 1]}
-                      tasks={website}
-                    />
-                  )
-                },
-                {
-                  tabName: "Server",
-                  tabIcon: Cloud,
-                  tabContent: (
-                    <Tasks
-                      checkedIndexes={[1]}
-                      tasksIndexes={[0, 1, 2]}
-                      tasks={server}
-                    />
-                  )
-                }
-              ]}
-            />
-          </GridItem>
-          <GridItem xs={12} sm={12} md={6}>
-            <Card>
-              <CardHeader color="warning">
-                <h4 className={classes.cardTitleWhite}>Employees Stats</h4>
-                <p className={classes.cardCategoryWhite}>
-                  New employees on 15th September, 2016
-                </p>
-              </CardHeader>
-              <CardBody>
-                <Table
-                  tableHeaderColor="warning"
-                  tableHead={["ID", "Name", "Salary", "Country"]}
-                  tableData={[
-                    ["1", "Dakota Rice", "$36,738", "Niger"],
-                    ["2", "Minerva Hooper", "$23,789", "Curaçao"],
-                    ["3", "Sage Rodriguez", "$56,142", "Netherlands"],
-                    ["4", "Philip Chaney", "$38,735", "Korea, South"]
-                  ]}
-                />
-              </CardBody>
-            </Card>
-          </GridItem>
-        </GridContainer> */}
       </div>
     );
   }
@@ -341,6 +266,9 @@ const styleLocal = {
   },
   paddingCardContent : {
     padding : "5px"
+  },
+  hover : {
+    cursor : "pointer"
   },
   ...styles
 }

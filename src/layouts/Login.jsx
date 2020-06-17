@@ -82,14 +82,26 @@ class Login extends BaseComponent {
     }
   
     componentDidMount(){
-      // this.setState({
-      //   token : sensitiveStorage.getToken() ? sensitiveStorage.getToken() : null
-      // })
+      document.addEventListener("keypress", this.handleKeyEnter);
       if(sensitiveStorage.getToken() != null || localStorage.getItem("LOGIN_TEACHER")){
         this.props.history.push({pathname : "/teacher/lich-giang-day"});
       }
     }
+    handleKeyEnter = (e) =>{
+      if(this.state.userName != "" && this.state.password != "" && e.keyCode == 13){
+        this._onClickLogin();
+      }
+      
+    }
     _onClickLogin = async()=>{
+      if(this.state.userName == "" || this.state.password == ""){
+        // this.state.errorMessage = "Username và password không được để trống!";
+        this.setState({
+          error : true,
+          errorMessage : "Username và password không được để trống!"
+        })
+        return;
+      }
       let loginInfor = {
         userName : this.state.userName,
         password : this.state.password

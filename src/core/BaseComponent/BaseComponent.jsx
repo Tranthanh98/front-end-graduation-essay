@@ -5,7 +5,11 @@ import {sensitiveStorage} from '../services/SensitiveStorage';
 import Backdrop from '@material-ui/core/Backdrop';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import moment from 'moment';
-
+// import Modal from '@material-ui/core/Modal';
+// import Fade from '@material-ui/core/Fade';
+import CustomModal from '../../components/Modal/CustomModal';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 class BaseComponent extends React.Component{
     constructor(props){
@@ -18,6 +22,11 @@ class BaseComponent extends React.Component{
                     color: '#fff',}} open={self.state.statusLoader}>
                     <CircularProgress color="inherit" />
                 </Backdrop>
+                <CustomModal
+                    open={self.state.openModal}
+                    onClose={self.handleCloseModal}
+                    content={self.renderBodyModal()}
+                />
                 {
                     this.renderBody()
                 }
@@ -27,6 +36,19 @@ class BaseComponent extends React.Component{
     }
     renderBody(){
         throw("method render body must be override");
+    }
+    handleCloseModal = ()=>{
+        this.setState({
+            openModal : false
+        })
+    }
+    hanldeOpenModal = ()=>{
+        this.setState({
+            openModal : true
+        })
+    }
+    renderBodyModal() {
+        return <div>testing</div>;
     }
     goTo = (url, param = "") =>{
         this.props.history.push({
@@ -64,6 +86,10 @@ class BaseComponent extends React.Component{
     }
     formatDateTime =(value,formatType = "DD/MM/YYYY")=>{
         return moment(value).format(formatType);
+    }
+    getDate(){
+        let nowDate = new Date();
+        return `${nowDate.getFullYear()}-${nowDate.getMonth()}-${nowDate.getDate()}`;
     }
 }
 export default (BaseComponent);

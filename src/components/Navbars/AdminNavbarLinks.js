@@ -10,6 +10,8 @@ import ClickAwayListener from "@material-ui/core/ClickAwayListener";
 import Hidden from "@material-ui/core/Hidden";
 import Poppers from "@material-ui/core/Popper";
 import Divider from "@material-ui/core/Divider";
+import Badge from '@material-ui/core/Badge';
+import {Typography, ButtonGroup} from '@material-ui/core';
 // @material-ui/icons
 import Person from "@material-ui/icons/Person";
 import Notifications from "@material-ui/icons/Notifications";
@@ -24,6 +26,9 @@ import styles from "assets/jss/material-dashboard-react/components/headerLinksSt
 import BaseComponent from '../../core/BaseComponent/BaseComponent';
 import * as httpClient from '../../core/HttpClient';
 import { sensitiveStorage } from "../../core/services/SensitiveStorage";
+import { Grid } from "@material-ui/core";
+import localStorage from '../../core/services/LocalStorage';
+import Table from "components/Table/Table.js";
 
 const useStyles = makeStyles(styles);
 
@@ -34,11 +39,104 @@ class AdminNavbarLinks extends BaseComponent {
     this.state = {
       openNotification : null,
       openProfile : null,
-
+      itemClass : null
     }
   }
-  // const [openNotification, setOpenNotification] = React.useState(null);
-  // const [openProfile, setOpenProfile] = React.useState(null);
+  componentDidMount(){
+    this.setState({
+      itemClass : localStorage.getItem("DAY_HOC") ? localStorage.getItem("DAY_HOC") : this.props.nowClass
+    })
+  }
+  _renderTableRow =()=>{
+    if(this.props.nowClass){
+      return this.props.nowClass.listStudent.map((item, index) => {
+        return [
+          <Typography>{item.mssv}</Typography>,
+          <Typography>{item.name_student}</Typography>,
+          <Typography>{item.countRollCall}</Typography>,
+          <Typography>{this.props.nowClass.buoi - item.countRollCall}</Typography>,
+          <Typography onClick={()=> {console.log(item)}}>Xem thông tin sinh viên</Typography>,
+          
+        ]
+      })
+    }
+    else{
+      return localStorage.getItem("DAY_HOC").listStudent.map((item, index) => {
+        return [
+          <Typography>{item.mssv}</Typography>,
+          <Typography>{item.name_student}</Typography>,
+          <Typography>{item.countRollCall}</Typography>,
+          <Typography>{localStorage.getItem("DAY_HOC").buoi - item.countRollCall}</Typography>,
+          <Typography onClick={()=> {console.log(item)}}>Xem thông tin sinh viên</Typography>,
+          
+        ]
+      })
+    }
+  }
+  _handleEndClass = async() =>{
+    // this.updateNowClass(true);
+    // let response = await httpClient.sendPost("")
+    this.props.updateNowClass(null)
+    localStorage.removeItem("DAY_HOC")
+  }
+  renderBodyModal(){
+    if(this.props.nowClass == null && localStorage.getItem("DAY_HOC") == null){
+      return <div>
+        <h6>Không có lớp nào đang mở</h6>
+      </div>
+    }
+
+    const {id, date, time, ma_mon, teacher_id, phong_hoc, ten_mon, totalSV, status, buoi} = this.props.nowClass ? this.props.nowClass : localStorage.getItem("DAY_HOC");
+    return (
+      <React.Fragment>
+        <Grid container>
+          <Grid item xs={12}>
+            <Typography variant="h3" align="center">
+              <strong>CHI TIẾT LỚP HỌC</strong>
+            </Typography>
+          </Grid>
+          <Grid item xs={3}>
+            <Typography>
+              Mã môn : {ma_mon}
+            </Typography>
+            <Typography>
+              Tên môn : {ten_mon}
+            </Typography>
+            <Typography>
+              Phòng : {phong_hoc}
+            </Typography>
+            <Typography>
+              Sĩ số : {totalSV}
+            </Typography>
+            <Typography>
+              Tuần thứ  : {buoi}
+            </Typography>
+          </Grid>
+          <Grid item xs={6}>
+
+          </Grid>
+          <Grid item xs={3}>
+            <Button onClick={this._handleEndClass} color="primary" variant="contained">
+              Kết thúc lớp học
+            </Button>
+          </Grid>
+          <Grid item xs={12}>
+            <Table
+              tableHeaderColor="primary"
+              tableHead={["MSSV", "Tên SV", "Đã điểm danh", "Số buổi nghỉ",""]}
+              tableData={this._renderTableRow()}
+            />
+          </Grid>
+        </Grid>
+      </React.Fragment>
+    )
+  }
+  showModalClass = ()=>{
+    if(this.props.nowClass != null){
+      this.hanldeOpenModal();
+    }
+    this.hanldeOpenModal();
+  }
   handleClickNotification = event => {
     if (this.state.openNotification && this.state.openNotification.contains(event.target)) {
       this.setOpenNotification(null);
@@ -70,7 +168,7 @@ class AdminNavbarLinks extends BaseComponent {
     this.setOpenProfile(null);
   };
   _hanldeLogout = () => {
-    console.log("test logout")
+    // console.log("test logout")
     this.logout();
   }
   renderBody(){
@@ -99,11 +197,15 @@ class AdminNavbarLinks extends BaseComponent {
           simple={!(window.innerWidth > 959)}
           aria-label="Dashboard"
           className={classes.buttonLink}
+          onClick={this.showModalClass}
         >
-          <Dashboard className={classes.icons} />
+          {/* <Dashboard className={classes.icons} />
           <Hidden mdUp implementation="css">
             <p className={classes.linkText}>Dashboard</p>
-          </Hidden>
+          </Hidden> */}
+          <Badge color="secondary" variant={this.props.nowClass || localStorage.getItem("DAY_HOC") ? "dot": "standard"}>
+            <Dashboard className={classes.icons}/>
+          </Badge>
         </Button>
         <div className={classes.manager}>
           <Button

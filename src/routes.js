@@ -11,7 +11,7 @@ import BookIcon from '@material-ui/icons/Book';
 import ScheduleTeach from "views/ScheduleTeach/ScheduleTeach";
 import UserProfile from "views/UserProfile/UserProfile.js";
 import RollCall from "views/RollCall/RollCall";
-import Typography from "views/Typography/Typography.js";
+import ManagementStudent from "views/ManagementStudent/ManagementStudent";
 import Icons from "views/Icons/Icons.js";
 import NotificationsPage from "views/Notifications/Notifications.js";
 
@@ -48,7 +48,7 @@ const dashboardRoutes = [
     name: "Quản lý sinh viên",
     rtlName: "طباعة",
     icon: LibraryBooks,
-    component: Typography,
+    component: ManagementStudent,
     layout: "/teacher"
   },
   {

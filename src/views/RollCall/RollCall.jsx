@@ -62,38 +62,14 @@ class RollCall extends BaseComponent {
     }
   }
   async componentDidMount(){
-    console.log('props roll call :', this.props.color)
     if(this.props.location.state != null){
-      console.log('param :',this.props.location.state.id);
+      const {id , tenMon, idLopHoc} = this.props.location.state;
       let data = {
-        MaMon : this.props.location.state.id,
-        teacherId : this.getUserId(),
-        date : this.formatDateTime(new Date(), "YYYY-MM-DD")
+        ten_mon : tenMon,
+        ma_mon : id
       }
-      console.log('data send get student :', data);
-      this.updateStateLoader(true);
-      let response = await httpClient.sendPost('/get-student-by-class', data);
-      this.updateStateLoader(false);
-      if(!this.validateApi(response)){
-        const {errorMessage} = response.data;
-        const isShowTable = response.data.isSuccess;
-        console.log('errorMessage :', errorMessage);
-        this.setState({
-          errorMessage,
-          isShowTable
-        });
-      }
-      else{
-        this.setState({
-          tabledData : response.data.Data,
-          isShowTable : true
-        })
-      }
-      console.log('response student :', response);
-      // this.setState({
-      //   tabledData : response.data.Data,
-      //   isShowTable : true
-      // })
+      await this.getDataStudentOfClass(data);
+     
     }
     else{
       this.setState({

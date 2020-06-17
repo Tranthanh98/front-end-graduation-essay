@@ -36,7 +36,7 @@ class Admin extends BaseComponent {
       nowClass : null
     }
     this.mainPanel = React.createRef();
-    // this.scheduleRefs = React.createRef();
+    this.scheduleRefs = React.createRef();
   }
   switchRoutes =() => {
     return(
@@ -53,7 +53,8 @@ class Admin extends BaseComponent {
             return (
               <Route
                 path={prop.layout + prop.path}
-                render={(props) => <Component {...props} 
+                render={(props) => <Component {...props}
+                                    ref={prop.path == "/lich-giang-day" ? this.scheduleRefs : null}
                                     nowClass={this.state.nowClass} 
                                     updateNowClass={this.updateNowClass}
                                     color={this.state.color}/>}
@@ -155,6 +156,7 @@ class Admin extends BaseComponent {
         localStorage.removeItem("DAY_HOC");
       }
     }
+    this.scheduleRefs.current._onChangeDate(new Date);
     this.setState({
       nowClass : value
     })

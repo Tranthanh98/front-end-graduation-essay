@@ -89,6 +89,7 @@ class RollCall extends BaseComponent {
     }
     this.updateStateLoader(true);
     let response = await httpClient.sendPost('/get-student-by-class', data);
+    console.log('thanhte',response);
     this.updateStateLoader(false);
     if(!this.validateApi(response)){
       const {errorMessage} = response.data;
@@ -188,6 +189,7 @@ class RollCall extends BaseComponent {
     console.log('face recognition : ', response);
     if(!this.validateApi(response)){
       this.setState({
+        fileImage : response.data.Data.imageAfterRecognition,
         errorMessage : response.data.errorMessage
       })
     }

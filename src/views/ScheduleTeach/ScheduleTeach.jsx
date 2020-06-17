@@ -164,7 +164,7 @@ class ScheduleTeach extends BaseComponent {
         }
         let responseStudent = await httpClient.sendPost('/get-student-rollcall', dataGetStudent);
         this.updateStateLoader(false);
-        
+          
         item.listStudent = responseStudent.data.Data
         localStorage.setItem('DAY_HOC', item);
         this.props.updateNowClass(item);

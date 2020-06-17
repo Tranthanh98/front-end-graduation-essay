@@ -15,6 +15,7 @@ import BaseComponent from '../../core/BaseComponent/BaseComponent';
 import * as httpClient from '../../core/HttpClient';
 import Checkbox from '@material-ui/core/Checkbox';
 import lodash from 'lodash';
+import ModalDetailStudent from './ModalDetailStudent';
 
 const styles = {
   cardCategoryWhite: {
@@ -55,16 +56,13 @@ class ManagementStudent extends BaseComponent {
       isShowSearchClass : false,
       errorMessage : "",
       isShowTable : false,
-      tenMon : ""
+      tenMon : "",
+      informationStudent : null
     }
   }
   async componentDidMount(){
     if(this.props.location.state != null){
       const {MaMon, tenMon} = this.props.location.state
-      // this.setState({
-      //   MaMon: MaMon, 
-      //   tenMon : tenMon
-      // })
       let data = {
         ten_mon : tenMon,
         ma_mon :MaMon
@@ -106,16 +104,19 @@ class ManagementStudent extends BaseComponent {
   viewDetail = async(item) =>{
     let data = {
       mssv : item.mssv,
-      MaMon : this.state.MaMon
+      MaMon : this.state.MaMon,
+      teacherId : this.getUserId()
     }
     let response = await httpClient.sendPost("/get-information-student", data);
-    console.log("response :", response);
+    this.setState({
+      informationStudent : response.data.Data
+    })
     this.hanldeOpenModal();
   }
   renderBodyModal(){
-    // return (
-
-    // )
+    return (
+      <ModalDetailStudent informationStudent={this.state.informationStudent}/>
+    )
   }
   _renderTableRow = () => {
     return this.state.tabledData.map((item,index)=>{

@@ -114,23 +114,17 @@ class Admin extends BaseComponent {
       document.body.style.overflow = "hidden";
     }
     window.addEventListener("resize", this.resizeFunction);
+    let data = {
+      date : this.getDate()
+    }
+    let dataRes = await httpClient.sendPost('/close-class-have-not-closed', data);
 
     if(localStorage.getItem("DAY_HOC")){
       let date = new Date(localStorage.getItem("DAY_HOC").date);
       let nowDate = new Date(this.getDate())
+      console.log("date :"+ date +" now date :"+ nowDate)
       if(date < nowDate){
-        
-        let data = {
-          idClass : localStorage.getItem("DAY_HOC").id,
-          status : EnumStatusClass.closed,
-          teacherId : this.getUserId(),
-          date : this.formatDateTime(new Date(localStorage.getItem("DAY_HOC").date), "YYYY-MM-DD")
-        }
-        let response = await httpClient.sendPost('/update-status-class', data);
-        if(this.validateApi(response)){
           localStorage.removeItem("DAY_HOC");
-        }
-        
       }
     }
 

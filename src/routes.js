@@ -12,7 +12,7 @@ import ScheduleTeach from "views/ScheduleTeach/ScheduleTeach";
 import UserProfile from "views/UserProfile/UserProfile.js";
 import RollCall from "views/RollCall/RollCall";
 import ManagementStudent from "views/ManagementStudent/ManagementStudent";
-import Icons from "views/Icons/Icons.js";
+import HomeWorkComponent from "views/HomeWork/HomeWork";
 import NotificationsPage from "views/Notifications/Notifications.js";
 
 // core components/views for RTL layout
@@ -56,7 +56,7 @@ const dashboardRoutes = [
     name: "Bài tập",
     rtlName: "الرموز",
     icon: BookIcon,
-    component: Icons,
+    component: HomeWorkComponent,
     layout: "/teacher"
   },
   {

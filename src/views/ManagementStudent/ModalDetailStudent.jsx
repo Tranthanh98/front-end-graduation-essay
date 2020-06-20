@@ -20,8 +20,8 @@ class ModalDetailStudent extends BaseComponent{
         })
     }
     renderBody(){
-        let {ListRollCall, course, email, imageTrained, mssv, nameStudent} = this.props.informationStudent;
-        console.log("list Image : ", imageTrained);
+        let {ListRollCall, course, email, imageTrained, mssv, nameStudent, isSuspended} = this.props.informationStudent;
+        console.log("inf student : ", this.props.informationStudent);
         const {classes} = this.props;
         return (
             <div className={classes.container}>
@@ -54,15 +54,19 @@ class ModalDetailStudent extends BaseComponent{
                         }
                         </Grid>
                     </Grid>
-                    <Grid item xs={2}></Grid>
+                    <Grid item xs={4}>
+                        {
+                            isSuspended ? (<Typography>Sinh viên này đã bị đình chỉ</Typography>) : null
+                        }
+                    </Grid>
                     <Grid item xs={8}>
+                        <Typography>Danh sách các buổi điểm danh của sinh viên</Typography>
                         <Table
                             tableHeaderColor="primary"
                             tableHead={["Ngày", "Phòng học", "Tuần thứ"]}
                             tableData={this._renderTableRow(ListRollCall)}
                         />
                     </Grid>
-                    <Grid item xs={2}></Grid>
                 </Grid>
             </div>
         )

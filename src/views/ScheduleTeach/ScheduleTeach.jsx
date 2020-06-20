@@ -63,10 +63,10 @@ class ScheduleTeach extends BaseComponent {
     }
   }
   async componentDidMount(){
-    await Promise.all([
-      this._onChangeDate(new Date),
-      this.getAllClassOfTeacher()
-    ])
+    // await Promise.all([
+      await this._onChangeDate(new Date)
+      await this.getAllClassOfTeacher()
+    // ])
   }
   getAllClassOfTeacher = async() => {
     let data = {

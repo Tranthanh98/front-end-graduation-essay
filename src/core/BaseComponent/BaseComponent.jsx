@@ -89,7 +89,7 @@ class BaseComponent extends React.Component{
     }
     getDate(){
         let nowDate = new Date();
-        return `${nowDate.getFullYear()}-${nowDate.getMonth()}-${nowDate.getDate()}`;
+        return `${nowDate.getFullYear()}-${nowDate.getMonth() + 1}-${nowDate.getDate()}`;
     }
 }
 export default (BaseComponent);

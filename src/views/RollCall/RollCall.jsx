@@ -154,6 +154,7 @@ class RollCall extends BaseComponent {
         <Typography>{item.NameStudent}</Typography>,
         <Typography>
           <Checkbox
+            disabled={item.isSuppended}
             checked={item.isRollCalled == 1 ? true : false}
             onChange={() => this._rollcallStudent(item)}
             color="primary"/>

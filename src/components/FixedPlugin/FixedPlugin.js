@@ -138,7 +138,7 @@ export default function FixedPlugin(props) {
             </a>
           </li>
 
-          <li className="button-container">
+          {/* <li className="button-container">
             <div className="button-container">
               <Button
                 color="success"
@@ -171,7 +171,7 @@ export default function FixedPlugin(props) {
             >
               Documentation
             </Button>
-          </li>
+          </li> */}
           <li className="adjustments-line" />
         </ul>
       </div>

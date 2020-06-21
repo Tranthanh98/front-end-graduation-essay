@@ -166,7 +166,8 @@ class RollCall extends BaseComponent {
           <Button disabled={this.state.fileImage !== null ? false : true} onClick={()=>this._trainingFace(item)} color="secondary">
             Training
           </Button>
-        </Typography>
+        </Typography>,
+        <Typography>{item.isSuppended ? "Sinh viên này đã bị đình chỉ" : ""}</Typography>
       ]
     })
   }
@@ -249,7 +250,7 @@ class RollCall extends BaseComponent {
                     <CardBody>
                       <Table
                         tableHeaderColor="primary"
-                        tableHead={["MSSV", "Tên SV", "Điểm danh", "Số ảnh training",""]}
+                        tableHead={["MSSV", "Tên SV", "Điểm danh", "Số ảnh training","Training", "Ghi chú"]}
                         tableData={this._renderTableRow()}
                       />
                     </CardBody>

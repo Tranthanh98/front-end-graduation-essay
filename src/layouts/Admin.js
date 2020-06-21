@@ -125,6 +125,7 @@ class Admin extends BaseComponent {
       console.log("date :"+ date +" now date :"+ nowDate)
       if(date < nowDate){
           localStorage.removeItem("DAY_HOC");
+          this.updateNowClass(null);
       }
     }
 
@@ -150,7 +151,11 @@ class Admin extends BaseComponent {
         localStorage.removeItem("DAY_HOC");
       }
     }
-    this.scheduleRefs.current._onChangeDate(new Date);
+    console.log('ref schedule :', this.scheduleRefs);
+    if(this.scheduleRefs.current != null){
+      this.scheduleRefs.current._onChangeDate(new Date);
+    }
+    
     this.setState({
       nowClass : value
     })

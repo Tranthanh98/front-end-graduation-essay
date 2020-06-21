@@ -2,12 +2,28 @@ import React from 'react';
 import BaseComponent from 'core/BaseComponent/BaseComponent';
 import { withStyles, Typography, Grid } from '@material-ui/core';
 import Table from "components/Table/Table.js";
+import { Doughnut } from 'react-chartjs-2';
 
 class ModalDetailStudent extends BaseComponent{
     constructor(props){
         super(props);
         this.state={
-
+            dataChart :{
+                labels: [
+                  "Các buổi đã điểm danh : " + this.props.informationStudent.ListRollCall.length,
+                  "Các buổi chưa điểm danh : " + this.props.informationStudent.totalBuoiHoc
+                ],
+                datasets: [
+                  {
+                    label: "Population (millions)",
+                    backgroundColor: [
+                      "#3e95cd",
+                      "#8e5ea2"
+                    ],
+                    data: [this.props.informationStudent.ListRollCall.length, this.props.informationStudent.totalBuoiHoc]
+                  }
+                ]
+            }
         }
     }
     _renderTableRow = (ListRollCall) =>{
@@ -56,8 +72,9 @@ class ModalDetailStudent extends BaseComponent{
                     </Grid>
                     <Grid item xs={4}>
                         {
-                            isSuspended ? (<Typography>Sinh viên này đã bị đình chỉ</Typography>) : null
+                            isSuspended ? (<Typography color="error">Sinh viên này đã bị đình chỉ</Typography>) : null
                         }
+                        <Doughnut data={this.state.dataChart} />
                     </Grid>
                     <Grid item xs={8}>
                         <Typography>Danh sách các buổi điểm danh của sinh viên</Typography>

@@ -136,6 +136,10 @@ class ScheduleTeach extends BaseComponent {
       return;
     }
     else{
+      if(this.props.nowClass || localStorage.getItem("DAY_HOC")){
+        alert("Bạn có một lớp đang mở!");
+        return;
+      }
       let check = window.confirm("Bạn muốn mở lớp học này ?");
       if(check){
         const data = {

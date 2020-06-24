@@ -125,7 +125,7 @@ class Admin extends BaseComponent {
       console.log("date :"+ date +" now date :"+ nowDate)
       if(date < nowDate){
           localStorage.removeItem("DAY_HOC");
-          this.updateNowClass(null);
+          // this.updateNowClass(null);
       }
     }
 

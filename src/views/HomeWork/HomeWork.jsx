@@ -2,7 +2,7 @@
 import React from "react";
 // @material-ui/core components
 import { makeStyles } from "@material-ui/core/styles";
-import Hidden from "@material-ui/core/Hidden";
+import {Typography} from "@material-ui/core";
 // core components
 import GridItem from "components/Grid/GridItem.js";
 import GridContainer from "components/Grid/GridContainer.js";
@@ -14,36 +14,10 @@ import styles from "assets/jss/material-dashboard-react/views/iconsStyle.js";
 class HomeWork extends React.Component{
   render(){
     return(
-      <div>testing</div>
+      <Typography>
+        Tính năng này đang trong quá trình phát triển. Vui lòng quay lại sau!
+      </Typography>
     )
   }
 }
 export default HomeWork;
-// const useStyles = makeStyles(styles);
-
-// export default function HomeWork() {
-//   const classes = useStyles();
-//   return (
-//     <GridContainer>
-//       <GridItem xs={12} sm={12} md={12}>
-//         <Card plain>
-//           <CardHeader plain color="primary">
-//             <h4 className={classes.cardTitleWhite}>Material Design Icons</h4>
-//             <p className={classes.cardCategoryWhite}>
-//               Handcrafted by our friends from{" "}
-//             </p>
-//           </CardHeader>
-//           <CardBody>
-//             <Hidden only={["sm", "xs"]}>
-//             </Hidden>
-//             <Hidden only={["lg", "md"]}>
-//               <GridItem xs={12} sm={12} md={6}>
-
-//               </GridItem>
-//             </Hidden>
-//           </CardBody>
-//         </Card>
-//       </GridItem>
-//     </GridContainer>
-//   );
-// }

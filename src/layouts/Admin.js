@@ -118,17 +118,29 @@ class Admin extends BaseComponent {
       date : this.getDate()
     }
     let dataRes = await httpClient.sendPost('/close-class-have-not-closed', data);
-
-    if(localStorage.getItem("DAY_HOC")){
-      let date = new Date(localStorage.getItem("DAY_HOC").date);
-      let nowDate = new Date(this.getDate())
-      console.log("date :"+ date +" now date :"+ nowDate)
-      if(date < nowDate){
-          localStorage.removeItem("DAY_HOC");
-          // this.updateNowClass(null);
+    if(this.validateApi(dataRes)){
+      if(localStorage.getItem("DAY_HOC") != null){
+        let date = new Date(localStorage.getItem("DAY_HOC").date);
+        let nowDate = new Date(this.getDate())
+        console.log("date :"+ date +" now date :"+ nowDate)
+        if(date < nowDate){
+            localStorage.removeItem("DAY_HOC");
+            // this.updateNowClass(null);
+        }
       }
     }
-
+    let dataGetNowClass = {
+      teacherId : this.getUserId()
+    }
+    let nowClassOpen = await httpClient.sendPost("get-now-class-opening", dataGetNowClass);
+    if(this.validateApi(nowClassOpen)){
+      let item = nowClassOpen.data.Data.nowClass;
+      item.listStudent = nowClassOpen.data.Data.listStudent
+      localStorage.setItem("DAY_HOC", item);
+    }
+    else{
+      localStorage.removeItem("DAY_HOC");
+    }
     let self = this;
     return function cleanup() {
       

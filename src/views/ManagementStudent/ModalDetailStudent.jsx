@@ -63,6 +63,7 @@ class ModalDetailStudent extends BaseComponent{
                             imageTrained.map((img, index) =>{
                                 return (
                                     <Grid key={index} item xs={3}>
+                                        <i size="md" className="fa fa-times-circle-o fa-2x" aria-hidden="true"></i>
                                         <img src={img} alt=""/>
                                     </Grid>
                                 )

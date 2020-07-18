@@ -88,8 +88,8 @@ class AdminNavbarLinks extends BaseComponent {
 
     const {id, date, time, ma_mon, teacher_id, phong_hoc, ten_mon, totalSV, status, buoi} = this.props.nowClass ? this.props.nowClass : localStorage.getItem("DAY_HOC");
     return (
-      <React.Fragment>
-        <Grid container>
+      <div >
+        <Grid container >
           <Grid item xs={12}>
             <Typography variant="h3" align="center">
               <strong>CHI TIẾT LỚP HỌC</strong>
@@ -133,7 +133,7 @@ class AdminNavbarLinks extends BaseComponent {
             />
           </Grid>
         </Grid>
-      </React.Fragment>
+      </div>
     )
   }
   _handleRollCall = (ma_mon, ten_mon, id) =>{
@@ -333,13 +333,13 @@ class AdminNavbarLinks extends BaseComponent {
                   <ClickAwayListener onClickAway={this.handleCloseProfile}>
                     <MenuList role="menu">
                       <MenuItem
-                        onClick={this.handleCloseProfile}
+                        onClick={()=>{this.goTo("/teacher/user")}}
                         className={classes.dropdownItem}
                       >
                         Profile
                       </MenuItem>
                       <MenuItem
-                        onClick={this.handleCloseProfile}
+                        
                         className={classes.dropdownItem}
                       >
                         Cài đặt

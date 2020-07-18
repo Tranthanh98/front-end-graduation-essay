@@ -9,6 +9,7 @@ const styleModal = (theme) => ({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
+    overflowY : "scroll"
   },
   paper: {
     minHeight : "80vh",
@@ -17,6 +18,7 @@ const styleModal = (theme) => ({
     boxShadow: theme.shadows[5],
     borderRadius : "10px",
     padding: theme.spacing(2, 4, 3),
+    overflowY : "scroll",
   },
 });
 

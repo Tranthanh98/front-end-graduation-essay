@@ -3,6 +3,7 @@ import BaseComponent from 'core/BaseComponent/BaseComponent';
 import { withStyles, Typography, Grid } from '@material-ui/core';
 import Table from "components/Table/Table.js";
 import { Doughnut } from 'react-chartjs-2';
+import * as httpClient from '../../core/HttpClient';
 
 class ModalDetailStudent extends BaseComponent{
     constructor(props){
@@ -35,6 +36,14 @@ class ModalDetailStudent extends BaseComponent{
             ]
         })
     }
+    _deleteImage = async(image) =>{
+        console.log("id image:", image);
+        let response = await httpClient.sendGet('/delete-image-student?id='+ image.id);
+        if(!this.validateApi(response)){
+            return;
+        }
+        this.props.deleteImage(image);
+    }
     renderBody(){
         let {ListRollCall, course, email, imageTrained, mssv, nameStudent, isSuspended} = this.props.informationStudent;
         console.log("inf student : ", this.props.informationStudent);
@@ -63,8 +72,10 @@ class ModalDetailStudent extends BaseComponent{
                             imageTrained.map((img, index) =>{
                                 return (
                                     <Grid key={index} item xs={3}>
-                                        <i size="md" className="fa fa-times-circle-o fa-2x" aria-hidden="true"></i>
-                                        <img src={img} alt=""/>
+                                        <div style={{cursor: "pointer"}} onClick={()=> this._deleteImage(img)}>
+                                            <i size="md" className="fa fa-times-circle-o fa-2x" aria-hidden="true"></i>
+                                        </div>
+                                        <img src={img.imageString} alt=""/>
                                     </Grid>
                                 )
                             })

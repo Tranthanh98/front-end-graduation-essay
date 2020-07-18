@@ -115,8 +115,15 @@ class ManagementStudent extends BaseComponent {
   }
   renderBodyModal(){
     return (
-      <ModalDetailStudent informationStudent={this.state.informationStudent}/>
+      <ModalDetailStudent deleteImage={this._deleteImage} informationStudent={this.state.informationStudent}/>
     )
+  }
+  _deleteImage = (image) => {
+    let cloneData = {...this.state.informationStudent};
+    let index = cloneData.imageTrained.indexOf(image);
+    console.log("index of image:", index);
+    cloneData.imageTrained.splice(index, 1);
+    this.setState({informationStudent: cloneData});
   }
   _renderTableRow = () => {
     return this.state.tabledData.map((item,index)=>{

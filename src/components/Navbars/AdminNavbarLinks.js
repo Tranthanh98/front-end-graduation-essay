@@ -120,6 +120,11 @@ class AdminNavbarLinks extends BaseComponent {
               Kết thúc lớp học
             </Button>
           </Grid>
+          <Grid item xs={3}>
+            <Button onClick={() =>this._handleRollCall(ma_mon, ten_mon, id)} color="primary" variant="contained">
+              Điểm danh
+            </Button>
+          </Grid>
           <Grid item xs={12}>
             <Table
               tableHeaderColor="primary"
@@ -130,6 +135,10 @@ class AdminNavbarLinks extends BaseComponent {
         </Grid>
       </React.Fragment>
     )
+  }
+  _handleRollCall = (ma_mon, ten_mon, id) =>{
+    this.goTo('/teacher/diem-danh', {id : ma_mon, tenMon : ten_mon, idLopHoc : id});
+    this.handleCloseModal();
   }
   showModalClass = ()=>{
     if(this.props.nowClass != null){

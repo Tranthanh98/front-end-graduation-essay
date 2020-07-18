@@ -13,7 +13,7 @@ class SubjectPage extends BaseComponent {
   constructor(props) {
     super(props);
     this.state = {
-      classOfStudents: [],
+      studyings: [],
     };
     this.studentId = sensitiveStorage.getStudentId();
   }
@@ -22,22 +22,22 @@ class SubjectPage extends BaseComponent {
     this.ajaxGet({
       url: `/api/student/GetAllSubjectOfStudent?studentId=${this.studentId}`,
       success: (apiResult) => {
-        this.setState({ classOfStudents: apiResult.data });
+        this.setState({ studyings: apiResult.data });
       },
       unsuccess: (apiResult) => {
-        this._error(apiResult.messages[0]);
+        console.error(apiResult.messages[0]);
       },
     });
   };
-  _onClickDetailBtn = () => {
-    this.openModal({ content: <SubjectDetail /> });
+  _onClickDetailBtn = (studying) => {
+    this.openModal({ content: <SubjectDetail studying={studying} /> });
   };
   componentDidMount() {
     this._getClassOfStudent();
   }
   renderBody() {
     const { studentInfo, classes } = this.props;
-    const { classOfStudents } = this.state;
+    const { studyings } = this.state;
     return (
       <Card profile style={{ marginTop: 0 }}>
         {/* <CardHeader color="primary">
@@ -50,7 +50,7 @@ class SubjectPage extends BaseComponent {
       </CardHeader> */}
         <CardBody style={{ padding: "25px 20px 30px" }}>
           <RCSTable
-            data={classOfStudents}
+            data={studyings}
             head={(Cell) => (
               <React.Fragment>
                 <Cell>Mã môn học</Cell>
@@ -62,12 +62,16 @@ class SubjectPage extends BaseComponent {
             )}
             body={(row, Cell) => (
               <React.Fragment>
-                <Cell>{row.id}</Cell>
-                <Cell>{row.subject.name}</Cell>
-                <Cell>{row.name}</Cell>
-                <Cell>{DayOfWeek[row.day]}</Cell>
+                <Cell>{row.class.subject.id}</Cell>
+                <Cell>{row.class.subject.name}</Cell>
+                <Cell>{row.class.name}</Cell>
+                <Cell>{DayOfWeek[row.class.day]}</Cell>
                 <Cell className={classes.celCenter}>
-                  <IconButton onClick={this._onClickDetailBtn}>
+                  <IconButton
+                    onClick={() => {
+                      this._onClickDetailBtn(row);
+                    }}
+                  >
                     <OpenIcon />
                   </IconButton>
                 </Cell>

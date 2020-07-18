@@ -62,7 +62,9 @@ class TrainingFace extends BaseComponent {
         for (let i = 1; i <= a; i++) {
           trainingImages.pop();
         }
-        trainingImages.push(_trainingImages);
+        _trainingImages.forEach((t) => {
+          trainingImages.push(t);
+        });
         this.setState({}, () => {
           onUpdateTrainImages();
         });

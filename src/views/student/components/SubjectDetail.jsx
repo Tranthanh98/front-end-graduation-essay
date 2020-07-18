@@ -6,10 +6,12 @@ import {
   Grid,
   IconButton,
   Typography,
+  TextField,
 } from "@material-ui/core";
 import { sensitiveStorage } from "core/services/SensitiveStorage";
 import PhotoCameraIcon from "@material-ui/icons/PhotoCamera";
 import Configs from "app.config";
+import { DayOfWeek } from "core/Enum";
 
 class SubjectDetail extends BaseComponent {
   constructor(props) {
@@ -18,40 +20,37 @@ class SubjectDetail extends BaseComponent {
     this.studentId = sensitiveStorage.getStudentId();
   }
   renderBody() {
-    const { classes } = this.props;
+    const { classes, studying } = this.props;
     console.log("subject detail");
     return (
-      <Grid container spacing={2}>
-        <Grid item xs={12}>
-          <Typography variant="h5" className={classes.title}>
-            Tên môn học
-          </Typography>
-        </Grid>
-        <Grid item xs={12} className={classes.webcam}>
-          sadjghkj
-        </Grid>
-      </Grid>
+      <div className={classes.root}>
+        <Typography variant="h5" className={classes.title}>
+          {studying.class.subject.name}
+        </Typography>
+        <div className={classes.content}>
+          <TextField value={studying.class.teacher.name} label="Giảng viên" />
+          <TextField
+            value={`${DayOfWeek[studying.class.day]} (${
+              studying.class.startSession
+            }-${studying.class.startSession +
+              studying.class.quantityOfSession -
+              1})`}
+            label="Thời gian"
+          />
+        </div>
+      </div>
     );
   }
 }
 
 export default withStyles({
-  webcam: { position: "relative", display: "flex", justifyContent: "center" },
-  captureButton: {
-    position: "absolute",
-    bottom: 0,
-    left: "calc(50% - 30px)",
-    color: "#fff",
-  },
+  root: {},
   title: {
     padding: "15px 30px 10px",
     borderBottom: "1px solid #ccc",
     textTransform: "uppercase",
   },
-  subTitle: {
-    padding: "15px 30px 10px",
-    borderBottom: "1px solid #ccc",
-    textTransform: "capitalize",
-    fontWeight: "normal",
+  content: {
+    padding: "10px 15px",
   },
 })(SubjectDetail);

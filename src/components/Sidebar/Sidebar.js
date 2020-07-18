@@ -135,7 +135,7 @@ export default function Sidebar(props) {
           open
           classes={{
             paper: classNames(classes.drawerPaper, {
-              [classes.drawerPaperRTL]: props.rtlActive
+              [classes.drawerPaperRTL]: props.rtlActive 
             })
           }}
         >

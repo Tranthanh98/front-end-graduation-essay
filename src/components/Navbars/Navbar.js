@@ -10,7 +10,7 @@ import Hidden from "@material-ui/core/Hidden";
 // @material-ui/icons
 import Menu from "@material-ui/icons/Menu";
 // core components
-import AdminNavbarLinks from "./AdminNavbarLinks.js";
+import NavbarLinks from "./NavbarLinks.js";
 import RTLNavbarLinks from "./RTLNavbarLinks.js";
 import Button from "components/CustomButtons/Button.js";
 
@@ -38,13 +38,14 @@ export default function Header(props) {
     <AppBar className={classes.appBar + appBarClasses}>
       <Toolbar className={classes.container}>
         <div className={classes.flex}>
-          {/* Here we create navbar brand, based on route name */}
-          <Button color="transparent" href="#" className={classes.title}>
-            {makeBrand()}
-          </Button> 
+          <Hidden mdUp>
+            <Button color="transparent" href="#" className={classes.title} style={{ fontWeight: "bold" }}>
+              {makeBrand()}
+            </Button>
+          </Hidden>
         </div>
         <Hidden smDown implementation="css">
-          {props.rtlActive ? <RTLNavbarLinks /> : <AdminNavbarLinks updateNowClass={props.updateNowClass} nowClass={props.nowClass}/>}
+          {props.rtlActive ? <RTLNavbarLinks /> : <NavbarLinks updateNowClass={props.updateNowClass} nowClass={props.nowClass} />}
         </Hidden>
         <Hidden mdUp implementation="css">
           <IconButton

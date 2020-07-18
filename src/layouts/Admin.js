@@ -182,7 +182,7 @@ class Admin extends BaseComponent {
           logo={logo}
           image={this.state.image}
           handleDrawerToggle={this.handleDrawerToggle}
-          open={this.mobileOpen}
+          open={this.state.mobileOpen}
           color={this.state.color}
           // {...rest}
         />

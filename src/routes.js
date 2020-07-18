@@ -51,22 +51,22 @@ const dashboardRoutes = [
     component: ManagementStudent,
     layout: "/teacher"
   },
-  {
-    path: "/bai-tap",
-    name: "Bài tập",
-    rtlName: "الرموز",
-    icon: BookIcon,
-    component: HomeWorkComponent,
-    layout: "/teacher"
-  },
-  {
-    path: "/thong-bao",
-    name: "Thông báo",
-    rtlName: "إخطارات",
-    icon: Notifications,
-    component: NotificationsPage,
-    layout: "/teacher"
-  }
+  // {
+  //   path: "/bai-tap",
+  //   name: "Bài tập",
+  //   rtlName: "الرموز",
+  //   icon: BookIcon,
+  //   component: HomeWorkComponent,
+  //   layout: "/teacher"
+  // },
+  // {
+  //   path: "/thong-bao",
+  //   name: "Thông báo",
+  //   rtlName: "إخطارات",
+  //   icon: Notifications,
+  //   component: NotificationsPage,
+  //   layout: "/teacher"
+  // }
 ];
 
 export default dashboardRoutes;

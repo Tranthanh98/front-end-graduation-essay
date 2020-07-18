@@ -1,9 +1,12 @@
 
 // @material-ui/icons
-import Dashboard from "@material-ui/icons/Dashboard";
-import Person from "@material-ui/icons/Person";
-import LibraryBooks from "@material-ui/icons/LibraryBooks";
-import Notifications from "@material-ui/icons/Notifications";
+import {
+  AccountCircle as AccountIcon,
+  Dashboard as DashboardIcon,
+  Person as PersonIcon,
+  LibraryBooks as LibraryBookIcon,
+  Notifications as NotificationIcon,
+} from "@material-ui/icons";
 // import HomeWorkIcon from '@material-ui/icons/HomeWork';
 // import MenuBookIcon from '@material-ui/icons/MenuBook';
 import BookIcon from '@material-ui/icons/Book';
@@ -14,16 +17,19 @@ import RollCall from "views/RollCall/RollCall";
 import ManagementStudent from "views/ManagementStudent/ManagementStudent";
 import HomeWorkComponent from "views/HomeWork/HomeWork";
 import NotificationsPage from "views/Notifications/Notifications.js";
+import InfoPage from "views/student/pages/InfoPage";
+import SubjectPage from "views/student/pages/SubjectPage";
 
 // core components/views for RTL layout
 import RTLPage from "views/RTLPage/RTLPage.js";
+import Student from "layouts/Student";
 
-const dashboardRoutes = [
+const teacherRoutes = [
   {
     path: "/lich-giang-day",
     name: "Lịch giảng dạy",
     rtlName: "لوحة القيادة",
-    icon: Dashboard,
+    icon: DashboardIcon,
     component: ScheduleTeach,
     layout: "/teacher"
   },
@@ -31,7 +37,7 @@ const dashboardRoutes = [
     path: "/user",
     name: "Thông tin cá nhân",
     rtlName: "ملف تعريفي للمستخدم",
-    icon: Person,
+    icon: PersonIcon,
     component: UserProfile,
     layout: "/teacher"
   },
@@ -47,7 +53,7 @@ const dashboardRoutes = [
     path: "/quan-ly-sinh-vien",
     name: "Quản lý sinh viên",
     rtlName: "طباعة",
-    icon: LibraryBooks,
+    icon: LibraryBookIcon,
     component: ManagementStudent,
     layout: "/teacher"
   },
@@ -55,7 +61,7 @@ const dashboardRoutes = [
     path: "/bai-tap",
     name: "Bài tập",
     rtlName: "الرموز",
-    icon: BookIcon,
+    icon: NotificationIcon,
     component: HomeWorkComponent,
     layout: "/teacher"
   },
@@ -63,10 +69,27 @@ const dashboardRoutes = [
     path: "/thong-bao",
     name: "Thông báo",
     rtlName: "إخطارات",
-    icon: Notifications,
+    icon: NotificationIcon,
     component: NotificationsPage,
     layout: "/teacher"
   }
 ];
-
-export default dashboardRoutes;
+const studentRoutes = [
+  {
+    path: "/information",
+    name: "Thông tin học sinh",
+    rtlName: "إخطارات",
+    icon: AccountIcon,
+    component: InfoPage,
+    layout: "/student"
+  },
+  {
+    path: "/subject",
+    name: "Môn học",
+    rtlName: "إخطارات",
+    icon: AccountIcon,
+    component: SubjectPage,
+    layout: "/student"
+  },
+];
+export { teacherRoutes, studentRoutes };

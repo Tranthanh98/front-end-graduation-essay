@@ -15,7 +15,6 @@ import BaseComponent from '../../core/BaseComponent/BaseComponent';
 import * as httpClient from '../../core/HttpClient';
 import Checkbox from '@material-ui/core/Checkbox';
 import WebcamRollCall from '../../components/Webcam/Webcam';
-import lodash from 'lodash';
 
 const styles = {
   cardCategoryWhite: {

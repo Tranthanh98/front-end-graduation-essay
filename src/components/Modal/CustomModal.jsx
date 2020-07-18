@@ -11,12 +11,12 @@ const styleModal = (theme) => ({
     justifyContent: 'center',
   },
   paper: {
-    minHeight : "80vh",
+    maxHeight : "90vh",
     width : "80vw",
     backgroundColor: "rgba(255, 255, 255, 1);",
     boxShadow: theme.shadows[5],
     borderRadius : "10px",
-    padding: theme.spacing(2, 4, 3),
+    padding: 0
   },
 });
 

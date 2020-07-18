@@ -7,31 +7,59 @@ const storage = window.sessionStorage
  * @description
  */
 class SensitiveStorage {
-
-  getUserId() {
-    return storage.getItem("user_id");
+  //User id
+  setUserId(id) {
+    storage.setItem("user_id", `${id}`);
   }
 
-  setUserId(token) {
-    storage.setItem("user_id", token);
+  getUserId() {
+    return parseInt(storage.getItem("user_id"));
+  }
+
+  setStudentId(id) {
+    storage.setItem("student_id", `${id}`);
+  }
+
+  getStudentId() {
+    return parseInt(storage.getItem("student_id"));
+  }
+
+  setTeacherId(id) {
+    storage.setItem("teacher_id", `${id}`);
+  }
+
+  getTeacherId() {
+    return parseInt(storage.getItem("teacher_id"));
   }
 
   removeUserId() {
     storage.removeItem("user_id");
+  }
+  //User role
+  setUserRole(role) {
+    storage.setItem("USER_ROLE", `${role}`);
+  }
+
+  getUserRole() {
+    return parseInt(storage.getItem("USER_ROLE"));
+  }
+
+  removeUserRole() {
+    storage.removeItem("USER_ROLE");
   }
 
   getToken() {
     return storage.getItem("TOKEN");
   }
 
-  setToken(token){
+  setToken(token) {
     storage.setItem("TOKEN", token);
   }
 
   removeToken() {
     storage.removeItem("TOKEN");
   }
-  
+
   getTrainingId() {
     return storage.getItem("id");
   }
@@ -43,22 +71,22 @@ class SensitiveStorage {
   removeTrainingId() {
     storage.removeItem("id");
   }
-  setUserName(userName){
+  setUserName(userName) {
     storage.setItem("USERNAME", userName);
   }
-  getUsername(){
+  getUsername() {
     return storage.getItem("USERNAME");
   }
-  removeUserName(){
+  removeUserName() {
     storage.removeItem("USERNAME");
   }
-  setClassRoom(classRoom){
+  setClassRoom(classRoom) {
     storage.setItem("CLASS", classRoom);
   }
-  getClassRoom(){
+  getClassRoom() {
     return storage.getItem("CLASS");
   }
-  removeClassRoom(){
+  removeClassRoom() {
     storage.removeItem("CLASS");
   }
 }

@@ -11,7 +11,7 @@ import Hidden from "@material-ui/core/Hidden";
 import Poppers from "@material-ui/core/Popper";
 import Divider from "@material-ui/core/Divider";
 import Badge from '@material-ui/core/Badge';
-import {Typography, ButtonGroup} from '@material-ui/core';
+import { Typography, ButtonGroup } from '@material-ui/core';
 // @material-ui/icons
 import Person from "@material-ui/icons/Person";
 import Notifications from "@material-ui/icons/Notifications";
@@ -32,64 +32,64 @@ import Table from "components/Table/Table.js";
 
 const useStyles = makeStyles(styles);
 
-class AdminNavbarLinks extends BaseComponent {
+class NavbarLinks extends BaseComponent {
   //const classes = useStyles();
-  constructor(props){
+  constructor(props) {
     super(props);
     this.state = {
-      openNotification : null,
-      openProfile : null,
-      itemClass : null
+      openNotification: null,
+      openProfile: null,
+      itemClass: null
     }
   }
-  componentDidMount(){
+  componentDidMount() {
     this.setState({
-      itemClass : localStorage.getItem("DAY_HOC") ? localStorage.getItem("DAY_HOC") : this.props.nowClass
+      itemClass: localStorage.getItem("DAY_HOC") ? localStorage.getItem("DAY_HOC") : this.props.nowClass
     })
   }
-  _renderTableRow =()=>{
-    if(this.props.nowClass){
+  _renderTableRow = () => {
+    if (this.props.nowClass) {
       return this.props.nowClass.listStudent.map((item, index) => {
         return [
           <Typography>{item.mssv}</Typography>,
           <Typography>{item.name_student}</Typography>,
           <Typography>{item.countRollCall}</Typography>,
           <Typography>{this.props.nowClass.buoi - item.countRollCall}</Typography>,
-          <Typography onClick={()=> {console.log(item)}}>Xem thông tin sinh viên</Typography>,
-          
+          <Typography onClick={() => { console.log(item) }}>Xem thông tin sinh viên</Typography>,
+
         ]
       })
     }
-    else{
+    else {
       return localStorage.getItem("DAY_HOC").listStudent.map((item, index) => {
         return [
           <Typography>{item.mssv}</Typography>,
           <Typography>{item.name_student}</Typography>,
           <Typography>{item.countRollCall}</Typography>,
           <Typography>{localStorage.getItem("DAY_HOC").buoi - item.countRollCall}</Typography>,
-          <Typography onClick={()=> {console.log(item)}}>Xem thông tin sinh viên</Typography>,
-          
+          <Typography onClick={() => { console.log(item) }}>Xem thông tin sinh viên</Typography>,
+
         ]
       })
     }
   }
-  _handleEndClass = async() =>{
+  _handleEndClass = async () => {
     // this.updateNowClass(true);
     // let response = await httpClient.sendPost("")
     this.props.updateNowClass(null)
     localStorage.removeItem("DAY_HOC")
   }
-  renderBodyModal(){
-    if(this.props.nowClass == null && localStorage.getItem("DAY_HOC") == null){
+  renderBodyModal() {
+    if (this.props.nowClass == null && localStorage.getItem("DAY_HOC") == null) {
       return <div>
         <h6>Không có lớp nào đang mở</h6>
       </div>
     }
 
-    const {id, date, time, ma_mon, teacher_id, phong_hoc, ten_mon, totalSV, status, buoi} = this.props.nowClass ? this.props.nowClass : localStorage.getItem("DAY_HOC");
+    const { id, date, time, ma_mon, teacher_id, phong_hoc, ten_mon, totalSV, status, buoi } = this.props.nowClass ? this.props.nowClass : localStorage.getItem("DAY_HOC");
     return (
-      <div >
-        <Grid container >
+      <React.Fragment>
+        <Grid container>
           <Grid item xs={12}>
             <Typography variant="h3" align="center">
               <strong>CHI TIẾT LỚP HỌC</strong>
@@ -120,28 +120,19 @@ class AdminNavbarLinks extends BaseComponent {
               Kết thúc lớp học
             </Button>
           </Grid>
-          <Grid item xs={3}>
-            <Button onClick={() =>this._handleRollCall(ma_mon, ten_mon, id)} color="primary" variant="contained">
-              Điểm danh
-            </Button>
-          </Grid>
           <Grid item xs={12}>
             <Table
               tableHeaderColor="primary"
-              tableHead={["MSSV", "Tên SV", "Đã điểm danh", "Số buổi nghỉ",""]}
+              tableHead={["MSSV", "Tên SV", "Đã điểm danh", "Số buổi nghỉ", ""]}
               tableData={this._renderTableRow()}
             />
           </Grid>
         </Grid>
-      </div>
+      </React.Fragment>
     )
   }
-  _handleRollCall = (ma_mon, ten_mon, id) =>{
-    this.goTo('/teacher/diem-danh', {id : ma_mon, tenMon : ten_mon, idLopHoc : id});
-    this.handleCloseModal();
-  }
-  showModalClass = ()=>{
-    if(this.props.nowClass != null){
+  showModalClass = () => {
+    if (this.props.nowClass != null) {
       this.hanldeOpenModal();
     }
     this.hanldeOpenModal();
@@ -155,12 +146,12 @@ class AdminNavbarLinks extends BaseComponent {
   };
   setOpenNotification = value => {
     this.setState({
-      openNotification : value
+      openNotification: value
     })
   }
-  setOpenProfile = value =>{
+  setOpenProfile = value => {
     this.setState({
-      openProfile : value
+      openProfile: value
     })
   }
   handleCloseNotification = () => {
@@ -180,8 +171,8 @@ class AdminNavbarLinks extends BaseComponent {
     // console.log("test logout")
     this.logout();
   }
-  renderBody(){
-    const {classes} = this.props;
+  renderBody() {
+    const { classes } = this.props;
     return (
       <div>
         <div className={classes.searchWrapper}>
@@ -212,8 +203,8 @@ class AdminNavbarLinks extends BaseComponent {
           <Hidden mdUp implementation="css">
             <p className={classes.linkText}>Dashboard</p>
           </Hidden> */}
-          <Badge color="secondary" variant={this.props.nowClass || localStorage.getItem("DAY_HOC") ? "dot": "standard"}>
-            <Dashboard className={classes.icons}/>
+          <Badge color="secondary" variant={this.props.nowClass || localStorage.getItem("DAY_HOC") ? "dot" : "standard"}>
+            <Dashboard className={classes.icons} />
           </Badge>
         </Button>
         <div className={classes.manager}>
@@ -333,30 +324,20 @@ class AdminNavbarLinks extends BaseComponent {
                   <ClickAwayListener onClickAway={this.handleCloseProfile}>
                     <MenuList role="menu">
                       <MenuItem
-                        onClick={()=>{this.goTo("/teacher/user")}}
+                        onClick={this.handleCloseProfile}
                         className={classes.dropdownItem}
                       >
                         Profile
                       </MenuItem>
                       <MenuItem
-                        
+                        onClick={this.handleCloseProfile}
                         className={classes.dropdownItem}
                       >
                         Cài đặt
                       </MenuItem>
                       <Divider light />
                       <MenuItem
-                        onClick={ async() => {
-                          console.log("test thành");
-                          this.updateStateLoader(true);
-                          let response = await httpClient.sendPost("/logout-teacher", {token : sensitiveStorage.getToken()});
-                          this.updateStateLoader(false);
-                          if(this.validateApi(response)){
-                            this.logout()
-                            this.goTo("/login")
-                          }
-                          
-                        }}
+                        onClick={() => { this.logout() }}
                         className={classes.dropdownItem}
                       >
                         Đăng xuất
@@ -372,4 +353,4 @@ class AdminNavbarLinks extends BaseComponent {
     );
   }
 }
-export default withRouter(withStyles(styles)(AdminNavbarLinks));
+export default withRouter(withStyles(styles)(NavbarLinks));

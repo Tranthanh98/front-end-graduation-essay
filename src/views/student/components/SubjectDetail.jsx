@@ -28,24 +28,15 @@ class SubjectDetail extends BaseComponent {
           {studying.class.subject.name}
         </Typography>
         <div className={classes.content}>
-          <Grid container spacing={2}>
-            <Grid item>
-              <TextField
-                value={studying.class.teacher.name}
-                label="Giảng viên"
-              />
-            </Grid>
-            <Grid item>
-              <TextField
-                value={`${DayOfWeek[studying.class.day]} (${
-                  studying.class.startSession
-                }-${studying.class.startSession +
-                  studying.class.quantityOfSession -
-                  1})`}
-                label="Thời gian"
-              />
-            </Grid>
-          </Grid>
+          <TextField value={studying.class.teacher.name} label="Giảng viên" />
+          <TextField
+            value={`${DayOfWeek[studying.class.day]} (${
+              studying.class.startSession
+            }-${studying.class.startSession +
+              studying.class.quantityOfSession -
+              1})`}
+            label="Thời gian"
+          />
         </div>
       </div>
     );

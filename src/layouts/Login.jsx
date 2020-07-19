@@ -157,7 +157,7 @@ class Login extends BaseComponent {
                     <LockOutlinedIcon />
                   </Avatar>
                   <Typography component="h1" variant="h5">
-                    Đăng nhập giảng viên
+                    Đăng nhập
                   </Typography>
                   {
                     this.state.error ? (

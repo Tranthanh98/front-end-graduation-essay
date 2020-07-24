@@ -11,7 +11,7 @@ import Webcam from "react-webcam";
 import { sensitiveStorage } from "core/services/SensitiveStorage";
 import PhotoCameraIcon from "@material-ui/icons/PhotoCamera";
 import Configs from "app.config";
-import TrainImage from "views/student/components/TrainImage";
+import Image from "views/student/components/Image";
 
 class TrainingFace extends BaseComponent {
   constructor(props) {
@@ -24,12 +24,12 @@ class TrainingFace extends BaseComponent {
     this.videoConstraints = {
       width: 1280,
       height: 720,
-      facingMode: "user",
+      facingMode: "environment",
     };
     this.studentId = sensitiveStorage.getStudentId();
   }
   _onTrainFace = (e) => {
-    const { classes, trainingImages, onUpdateTrainImages } = this.props;
+    const { classes, trainingImages } = this.props;
     var i = this.webcamRef.current.getScreenshot();
     var a = i.split(",");
     var data = {
@@ -41,9 +41,7 @@ class TrainingFace extends BaseComponent {
       data: data,
       success: (r) => {
         trainingImages.push(r.data);
-        this.setState({}, () => {
-          onUpdateTrainImages();
-        });
+        this.setState({});
       },
       unsuccess: (r) => {
         console.log(r);
@@ -51,7 +49,7 @@ class TrainingFace extends BaseComponent {
     });
   };
   _deleteTrainImage = (imageId) => {
-    const { classes, trainingImages, onUpdateTrainImages } = this.props;
+    const { classes, trainingImages } = this.props;
     this.ajaxGet({
       url: `/api/file/DeleteFile?fileId=${imageId}`,
       success: (apiResult) => {
@@ -65,9 +63,7 @@ class TrainingFace extends BaseComponent {
         _trainingImages.forEach((t) => {
           trainingImages.push(t);
         });
-        this.setState({}, () => {
-          onUpdateTrainImages();
-        });
+        this.setState({});
       },
       unsuccess: (apiResult) => {
         console.log(apiResult);
@@ -85,11 +81,6 @@ class TrainingFace extends BaseComponent {
     console.log("training face");
     return (
       <Grid container style={{ overflowY: "auto" }}>
-        <Grid item xs={12}>
-          <Typography variant="h5" className={classes.title}>
-            Train Face
-          </Typography>
-        </Grid>
         <Grid item xs={12} className={classes.webcam}>
           <Webcam
             audio={false}
@@ -111,7 +102,7 @@ class TrainingFace extends BaseComponent {
           </Typography>
           <div className={classes.imageWrapper}>
             {trainingImages.map((t) => (
-              <TrainImage
+              <Image
                 imageId={t.fileId}
                 key={t.fileId + "1"}
                 onDelete={this._onDeleteTrainImage}

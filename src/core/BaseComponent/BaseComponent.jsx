@@ -17,6 +17,8 @@ import { UserRole } from "core/Enum";
 class BaseComponent extends React.Component {
   constructor(props) {
     super(props);
+    this.state = {};
+    this.state.modal = {};
     let self = this;
     this.render = () => {
       return (
@@ -27,11 +29,7 @@ class BaseComponent extends React.Component {
           >
             <CircularProgress color="inherit" />
           </Backdrop>
-          <CustomModal
-            open={self.state.openModal ? self.state.openModal : false}
-            onClose={this.closeModal}
-            content={self.state.modalContent}
-          />
+          <CustomModal onClose={this.closeModal} {...self.state.modal} />
           {this.renderBody()}
         </>
       );
@@ -41,21 +39,10 @@ class BaseComponent extends React.Component {
     throw "method render body must be override";
   }
   closeModal = () => {
-    this.setState({
-      openModal: false,
-    });
+    this.setState({ modal: { open: false } });
   };
   openModal = (option) => {
-    this.setState({
-      openModal: true,
-      modalContent: option.content,
-    });
-  };
-  handleCloseModal = () => {
-    this.closeModal();
-  };
-  hanldeOpenModal = () => {
-    this.openModal({ content: "hello" });
+    this.setState({ modal: { open: true, ...option } });
   };
   renderBodyModal() {
     return <div>testing</div>;

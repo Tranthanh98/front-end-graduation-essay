@@ -1,38 +1,24 @@
 import React from "react";
-import { withStyles, createMuiTheme } from "@material-ui/core/styles";
+import { withStyles, Typography, IconButton } from "@material-ui/core";
 import Modal from "@material-ui/core/Modal";
 import Backdrop from "@material-ui/core/Backdrop";
 import Fade from "@material-ui/core/Fade";
-
-const styleModal = (theme) => ({
-  modal: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  paper: {
-    height: "90vh",
-    width: "80vw",
-    backgroundColor: "rgba(255, 255, 255, 1);",
-    boxShadow: theme.shadows[5],
-    borderRadius: "10px",
-    padding: 0,
-    overflowY: "auto",
-  },
-});
-
+import classnames from "classnames";
+import ClearIcon from "@material-ui/icons/Clear";
 class CustomModal extends React.Component {
   render() {
-    const { classes } = this.props;
-    const theme = createMuiTheme();
-    // console.log("test modal : ", this.props.content)
+    const { classes, fullScreen, content, onClose, open, title } = this.props;
+    const container = classnames({
+      [classes.container]: true,
+      [classes.fullScreen]: fullScreen,
+    });
     return (
       <Modal
         aria-labelledby="transition-modal-title"
         aria-describedby="transition-modal-description"
-        className={classes.modal}
-        open={this.props.open}
-        onClose={this.props.onClose}
+        className={classes.root}
+        open={open}
+        onClose={onClose}
         closeAfterTransition
         BackdropComponent={Backdrop}
         BackdropProps={{
@@ -40,11 +26,52 @@ class CustomModal extends React.Component {
         }}
       >
         <Fade in={this.props.open}>
-          <div className={classes.paper}>{this.props.content}</div>
+          <div className={container}>
+            <div className={classes.header}>
+              <Typography variant="h5" className={classes.title}>
+                {title}
+              </Typography>
+              <IconButton onClick={onClose}>
+                <ClearIcon />
+              </IconButton>
+            </div>
+            <div className={classes.body}>{content}</div>
+          </div>
         </Fade>
       </Modal>
     );
   }
 }
 
-export default withStyles(styleModal)(CustomModal);
+export default withStyles({
+  root: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  container: {
+    height: "90vh",
+    width: "80vw",
+    backgroundColor: "rgba(255, 255, 255, 1);",
+    boxShadow: "0px 3px 5px 1px #aaa",
+    borderRadius: "10px",
+    padding: 0,
+    overflowY: "auto",
+  },
+  header: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    borderBottom: "1px solid #ccc",
+  },
+  body: {},
+  fullScreen: {
+    height: "100vh",
+    width: "100vw",
+    borderRadius: "0px",
+  },
+  title: {
+    padding: "15px 30px 10px",
+    textTransform: "uppercase",
+  },
+})(CustomModal);

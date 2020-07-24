@@ -7,7 +7,7 @@ import { DayOfWeek } from "core/Enum";
 import { sensitiveStorage } from "core/services/SensitiveStorage";
 import Card from "components/Card/Card";
 import CardBody from "components/Card/CardBody";
-import SubjectDetail from "views/student/components/SubjectDetail";
+import StudentClassDetail from "views/student/components/StudentClassDetail";
 
 class SubjectPage extends BaseComponent {
   constructor(props) {
@@ -18,9 +18,8 @@ class SubjectPage extends BaseComponent {
     this.studentId = sensitiveStorage.getStudentId();
   }
   _getClassOfStudent = () => {
-    const { studentInfo } = this.props;
     this.ajaxGet({
-      url: `/api/student/GetAllSubjectOfStudent?studentId=${this.studentId}`,
+      url: `/api/student/GetAllSubject?studentId=${this.studentId}`,
       success: (apiResult) => {
         this.setState({ studyings: apiResult.data });
       },
@@ -30,26 +29,23 @@ class SubjectPage extends BaseComponent {
     });
   };
   _onClickDetailBtn = (studying) => {
-    this.openModal({ content: <SubjectDetail studying={studying} /> });
+    this.openModal({
+      content: <StudentClassDetail studying={studying} />,
+      title: studying.class.subject.name,
+    });
   };
   componentDidMount() {
     this._getClassOfStudent();
   }
   renderBody() {
-    const { studentInfo, classes } = this.props;
+    const { classes } = this.props;
     const { studyings } = this.state;
+    console.log("subject page");
     return (
       <Card profile style={{ marginTop: 0 }}>
-        {/* <CardHeader color="primary">
-        <Typography
-          variant="h5"
-          style={{ color: "#fff", textAlign: "left" }}
-        >
-          Hồ sơ
-        </Typography>
-      </CardHeader> */}
         <CardBody style={{ padding: "25px 20px 30px" }}>
           <RCSTable
+            emptyText="Bạn chưa đăng ký môn học nào cả"
             data={studyings}
             head={(Cell) => (
               <React.Fragment>

@@ -50,9 +50,7 @@ class Student extends BaseComponent {
                     <Component
                       {...props}
                       ref={
-                        prop.path == "/information"
-                          ? this.dashboardRef
-                          : null
+                        prop.path == "/information" ? this.dashboardRef : null
                       }
                     />
                   )}
@@ -114,12 +112,13 @@ class Student extends BaseComponent {
       document.body.style.overflow = "hidden";
     }
     window.addEventListener("resize", this.resizeFunction);
-  }
-  componentWillUnmount() {
-    if (navigator.platform.indexOf("Win") > -1) {
-      ps.destroy();
-    }
-    window.removeEventListener("resize", this.resizeFunction);
+    let self = this;
+    return function cleanup() {
+      if (navigator.platform.indexOf("Win") > -1) {
+        ps.destroy();
+      }
+      window.removeEventListener("resize", self.resizeFunction);
+    };
   }
   renderBody() {
     const { classes } = this.props;
@@ -131,7 +130,7 @@ class Student extends BaseComponent {
           logo={logo}
           image={this.state.image}
           handleDrawerToggle={this.handleDrawerToggle}
-          open={this.mobileOpen}
+          open={this.state.mobileOpen}
           color={this.state.color}
         />
         <div className={classes.mainPanel} ref={this.mainPanel}>

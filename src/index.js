@@ -5,11 +5,11 @@ import { createBrowserHistory } from "history";
 import { Router, Route, Switch, Redirect } from "react-router-dom";
 
 // core components
-import Admin from "layouts/Admin";
 // import RTL from "layouts/RTL.js";
 import Login from './layouts/Login';
 import "assets/css/material-dashboard-react.css?v=1.8.0";
 import Student from "layouts/Student";
+import Admin from "layouts/Admin";
 
 const hist = createBrowserHistory();
 

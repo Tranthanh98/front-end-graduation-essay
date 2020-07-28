@@ -1,7 +1,7 @@
 import React from "react";
 import BaseComponent from "core/BaseComponent/BaseComponent";
 import { withStyles, IconButton } from "@material-ui/core";
-import RCSTable from "views/student/components/RCSTable";
+import RCSTable from "views/general/RCSTable";
 import { OpenInNew as OpenIcon } from "@material-ui/icons";
 import { DayOfWeek } from "core/Enum";
 import { sensitiveStorage } from "core/services/SensitiveStorage";

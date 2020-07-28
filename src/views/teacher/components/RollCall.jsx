@@ -12,10 +12,11 @@ import Webcam from "react-webcam";
 import { sensitiveStorage } from "core/services/SensitiveStorage";
 import PhotoCameraIcon from "@material-ui/icons/PhotoCamera";
 import Configs from "app.config";
-import Image from "views/student/components/Image";
+import Image from "views/general/Image";
 import { isThisISOWeek } from "date-fns/esm";
 import { ClassStatus } from "core/Enum";
-import RCSTable from "views/student/components/RCSTable";
+import RCSTable from "views/general/RCSTable";
+import GetImage from "views/general/GetImage";
 
 class RollCall extends BaseComponent {
   constructor(props) {
@@ -30,10 +31,12 @@ class RollCall extends BaseComponent {
     this.studentId = sensitiveStorage.getStudentId();
     this.loadData = false;
   }
-  _onRollCall = (e) => {
+  _onGetImage = (image) => {
+    this._rollCall(image);
+  };
+  _rollCall = (image) => {
     let { classSchedule } = this.props;
-    var i = this.webcamRef.current.getScreenshot();
-    var a = i.split(",");
+    var a = image.split(",");
     var data = {
       classScheduleId: classSchedule.id,
       base64Image: a[1],
@@ -116,20 +119,8 @@ class RollCall extends BaseComponent {
     console.log("roll call");
     return (
       <Grid container style={{ overflowY: "auto" }}>
-        <Grid item xs={12} className={classes.webcam}>
-          <Webcam
-            audio={false}
-            width={800}
-            ref={this.webcamRef}
-            screenshotFormat="image/jpg"
-            videoConstraints={this.videoConstraints}
-          />
-          <IconButton
-            onClick={this._onRollCall}
-            className={classes.captureButton}
-          >
-            <PhotoCameraIcon fontSize="large" />
-          </IconButton>
+        <Grid item xs={12}>
+          <GetImage onGetImage={this._onGetImage} />
         </Grid>
         <Grid item xs={12}>
           <Typography variant="h6" className={classes.subTitle}>
@@ -190,18 +181,6 @@ class RollCall extends BaseComponent {
 }
 
 export default withStyles({
-  webcam: {
-    position: "relative",
-    display: "flex",
-    justifyContent: "center",
-    margin: "16px",
-  },
-  captureButton: {
-    position: "absolute",
-    bottom: 0,
-    left: "calc(50% - 30px)",
-    color: "#fff",
-  },
   title: {
     padding: "15px 30px 10px",
     borderBottom: "1px solid #ccc",

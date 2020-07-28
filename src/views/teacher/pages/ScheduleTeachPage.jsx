@@ -5,7 +5,7 @@ import GridContainer from "components/Grid/GridContainer.js";
 import { Typography, IconButton } from "@material-ui/core";
 import { sensitiveStorage } from "core/services/SensitiveStorage";
 import BaseComponent from "core/BaseComponent/BaseComponent";
-import RCSTable from "views/student/components/RCSTable";
+import RCSTable from "views/general/RCSTable";
 import { OpenInNew as OpenIcon } from "@material-ui/icons";
 import CardBody from "components/Card/CardBody";
 import Card from "components/Card/Card";

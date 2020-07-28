@@ -12,11 +12,11 @@ import {
 } from "@material-ui/core";
 import { sensitiveStorage } from "core/services/SensitiveStorage";
 import { DayOfWeek } from "core/Enum";
-import RCSTable from "views/student/components/RCSTable";
+import RCSTable from "views/general/RCSTable";
 import moment from "moment";
 import { ClassStatus } from "core/Enum";
 import { ClassStatusName } from "core/Enum";
-import Image from "./Image";
+import Image from "views/general/Image";
 
 class StudentClassDetail extends BaseComponent {
   constructor(props) {

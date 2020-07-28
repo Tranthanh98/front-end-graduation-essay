@@ -11,7 +11,7 @@ import Webcam from "react-webcam";
 import { sensitiveStorage } from "core/services/SensitiveStorage";
 import PhotoCameraIcon from "@material-ui/icons/PhotoCamera";
 import Configs from "app.config";
-import Image from "views/student/components/Image";
+import Image from "views/general/Image";
 import TrainingFace from "views/student/components/TrainingFace";
 import Card from "components/Card/Card";
 import CardHeader from "components/Card/CardHeader";
@@ -125,7 +125,7 @@ export default withStyles({
   },
   imageWrapper: {
     display: "flex",
-    flexWrap: "nowrap",
+    flexWrap: "wrap",
     overflowX: "auto",
     margin: "0 8px",
   },

@@ -15,13 +15,29 @@ class Image extends BaseComponent {
     typeof onDelete == "function" && onDelete(imageId);
   };
   renderBody() {
-    const { imageId, onDelete, classes, style } = this.props;
+    const {
+      imageId,
+      onDelete,
+      classes,
+      style,
+      width,
+      height,
+      src,
+    } = this.props;
     return (
       <div className={classes.root}>
         <img
           className={classes.image}
-          src={`${Configs.serviceHost}/api/file/GetFileDataById?fileId=${imageId}`}
-          style={style}
+          src={
+            src
+              ? src
+              : `${Configs.serviceHost}/api/file/GetFileDataById?fileId=${imageId}`
+          }
+          style={{
+            width: width ? width : "100px",
+            height: height ? height : "100px",
+            ...style,
+          }}
         />
         {onDelete ? (
           <FontAwesomeIcon
@@ -41,8 +57,6 @@ export default withStyles({
     position: "relative",
   },
   image: {
-    width: "100px",
-    height: "100px",
     margin: "16px",
   },
   deleteIcon: {

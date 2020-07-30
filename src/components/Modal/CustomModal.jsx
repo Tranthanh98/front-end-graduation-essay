@@ -7,17 +7,27 @@ import classnames from "classnames";
 import ClearIcon from "@material-ui/icons/Clear";
 class CustomModal extends React.Component {
   render() {
-    const { classes, fullScreen, content, onClose, open, title } = this.props;
+    const {
+      classes,
+      fullScreen,
+      content,
+      onClose,
+      className,
+      open,
+      title,
+      style,
+    } = this.props;
     const container = classnames({
       [classes.container]: true,
       [classes.fullScreen]: fullScreen,
+      [className]: true,
     });
     return (
       <Modal
         aria-labelledby="transition-modal-title"
         aria-describedby="transition-modal-description"
         className={classes.root}
-        open={open}
+        open={open ? open : false}
         onClose={onClose}
         closeAfterTransition
         BackdropComponent={Backdrop}
@@ -26,7 +36,7 @@ class CustomModal extends React.Component {
         }}
       >
         <Fade in={this.props.open}>
-          <div className={container}>
+          <div className={container} style={style}>
             <div className={classes.header}>
               <Typography variant="h5" className={classes.title}>
                 {title}

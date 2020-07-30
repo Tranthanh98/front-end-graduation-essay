@@ -44,9 +44,10 @@ class StudentDetail extends BaseComponent {
           }
         });
         this.setState({});
+        this.success(r.messages[0]);
       },
       unsuccess: (r) => {
-        console.log(r.messages[0]);
+        this.error(r.messages[0]);
       },
     });
   };

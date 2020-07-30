@@ -1,5 +1,4 @@
 import React from "react";
-import { withRouter } from "react-router-dom";
 import { sensitiveStorage } from "../services/SensitiveStorage";
 // import { css } from "@emotion/core";
 import Backdrop from "@material-ui/core/Backdrop";
@@ -7,12 +6,12 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 import moment from "moment";
 // import Modal from '@material-ui/core/Modal';
 // import Fade from '@material-ui/core/Fade';
-import CustomModal from "../../components/Modal/CustomModal";
-import { ToastContainer, toast } from "react-toastify";
+import CustomModal from "components/Modal/CustomModal";
 import "react-toastify/dist/ReactToastify.css";
 import $ from "jquery";
-import Configs from "../../app.config";
+import Configs from "app.config";
 import { UserRole } from "core/Enum";
+import AlertifyManager from "components/AlertifyManager/AlertifyManager";
 
 class BaseComponent extends React.Component {
   constructor(props) {
@@ -20,6 +19,7 @@ class BaseComponent extends React.Component {
     this.state = {};
     this.state.modal = {};
     let self = this;
+    this._alertifyManager = React.createRef();
     this.render = () => {
       return (
         <>
@@ -30,6 +30,7 @@ class BaseComponent extends React.Component {
             <CircularProgress color="inherit" />
           </Backdrop>
           <CustomModal onClose={this.closeModal} {...self.state.modal} />
+          <AlertifyManager innerRef={this._alertifyManager} />
           {this.renderBody()}
         </>
       );
@@ -83,6 +84,15 @@ class BaseComponent extends React.Component {
       statusLoader: status,
     });
   };
+  success(content) {
+    return this._alertifyManager.current.addNewAlertify(content, "success");
+  }
+  warning(content) {
+    return this._alertifyManager.current.addNewAlertify(content, "warning");
+  }
+  error(content) {
+    return this._alertifyManager.current.addNewAlertify(content, "error");
+  }
   getUserId() {
     return sensitiveStorage.getUserId();
   }

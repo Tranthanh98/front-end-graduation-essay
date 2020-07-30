@@ -7,6 +7,8 @@ import {
   IconButton,
   Typography,
   Checkbox,
+  Switch,
+  FormControlLabel,
 } from "@material-ui/core";
 import Webcam from "react-webcam";
 import { sensitiveStorage } from "core/services/SensitiveStorage";
@@ -21,7 +23,7 @@ import GetImage from "views/general/GetImage";
 class RollCall extends BaseComponent {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = { review: true };
     this.webcamRef = React.createRef();
     this.videoConstraints = {
       width: 1280,
@@ -45,14 +47,14 @@ class RollCall extends BaseComponent {
       url: "/api/Class/RollCall",
       data: data,
       success: (r) => {
-        r.data.forEach((d) => {
+        r.data.rollCalls.forEach((d) => {
           let ok = false;
           classSchedule.rollCalls.forEach((rc) => {
             if (
               rc.studentId == d.studentId &&
               rc.classScheduleId == d.classScheduleId
             ) {
-              Object.keys(rc).map((i) => {
+              Object.keys(d).map((i) => {
                 rc[i] = d[i];
               });
               ok = true;
@@ -62,10 +64,27 @@ class RollCall extends BaseComponent {
             classSchedule.rollCalls.push(d);
           }
         });
-        this.setState({});
+        this.setState({}, () => {
+          if (this.state.review) {
+            this.openModal({
+              content: (
+                <Image
+                  width="auto"
+                  height="auto"
+                  src={`data:image/png;base64,${r.data.base64Image}`}
+                />
+              ),
+              style: {
+                width: "fit-content",
+                height: "fit-content",
+              },
+            });
+          }
+        });
+        this.success("Điểm danh thành công.");
       },
       unsuccess: (r) => {
-        console.log(r);
+        this.error(r.messages[0]);
       },
     });
   };
@@ -85,7 +104,7 @@ class RollCall extends BaseComponent {
         this.setState({});
       },
       unsuccess: (r) => {
-        console.log(r);
+        this.error(r.messages[0]);
       },
     });
   };
@@ -108,24 +127,37 @@ class RollCall extends BaseComponent {
           classSchedule.rollCalls.push(r.data);
         }
         this.setState({});
+        this.success(r.messages[0]);
       },
       unsuccess: (r) => {
-        console.log(r.messages[0]);
+        this.error(r.messages[0]);
       },
     });
   };
   renderBody() {
     const { classes, classSchedule } = this.props;
+    const { review } = this.state;
     console.log("roll call");
     return (
       <Grid container style={{ overflowY: "auto" }}>
         <Grid item xs={12}>
           <GetImage onGetImage={this._onGetImage} />
         </Grid>
-        <Grid item xs={12}>
+        <Grid item xs={12} className={classes.subTitleWrapper}>
           <Typography variant="h6" className={classes.subTitle}>
             Danh sách sinh viên
           </Typography>
+          <FormControlLabel
+            control={
+              <Switch
+                checked={review}
+                onChange={() => {
+                  this.setState({ review: !review });
+                }}
+              />
+            }
+            label="Xem lại"
+          />
         </Grid>
         <Grid item xs={12}>
           {this.loadData ? (
@@ -186,9 +218,14 @@ export default withStyles({
     borderBottom: "1px solid #ccc",
     textTransform: "uppercase",
   },
+  subTitleWrapper: {
+    borderBottom: "1px solid #ccc",
+    display: "flex",
+    justifyContent: "space-between",
+    flexDirection: "row",
+  },
   subTitle: {
     padding: "15px 30px 10px",
-    borderBottom: "1px solid #ccc",
     textTransform: "capitalize",
     fontWeight: "normal",
   },

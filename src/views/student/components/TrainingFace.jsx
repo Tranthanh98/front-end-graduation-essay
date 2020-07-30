@@ -45,9 +45,10 @@ class TrainingFace extends BaseComponent {
       success: (r) => {
         trainingImages.push(r.data);
         this.setState({});
+        this.success(r.messages[0]);
       },
       unsuccess: (r) => {
-        console.log(r);
+        this.success(r.messages[0]);
       },
     });
   };
@@ -67,9 +68,10 @@ class TrainingFace extends BaseComponent {
           trainingImages.push(t);
         });
         this.setState({});
+        this.success(apiResult.messages[0]);
       },
       unsuccess: (apiResult) => {
-        console.log(apiResult);
+        this.error(apiResult.messages[0]);
       },
     });
   };

@@ -122,9 +122,10 @@ class Login extends BaseComponent {
       data: loginInfor,
       success: (apiResult) => {
         this.login(apiResult);
+        this.success(apiResult.messages[0]);
       },
       unsuccess: (apiResult) => {
-        this._error(apiResult.messages[0]);
+        this.error(apiResult.messages[0]);
       },
     });
   };

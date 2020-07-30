@@ -1,8 +1,6 @@
 import React from "react";
 import { sensitiveStorage } from "../services/SensitiveStorage";
 // import { css } from "@emotion/core";
-import Backdrop from "@material-ui/core/Backdrop";
-import CircularProgress from "@material-ui/core/CircularProgress";
 import moment from "moment";
 // import Modal from '@material-ui/core/Modal';
 // import Fade from '@material-ui/core/Fade';
@@ -12,30 +10,33 @@ import $ from "jquery";
 import Configs from "app.config";
 import { UserRole } from "core/Enum";
 import AlertifyManager from "components/AlertifyManager/AlertifyManager";
+import Loading from "components/Loading/Loading";
 
 class BaseComponent extends React.Component {
   constructor(props) {
     super(props);
     this.state = {};
     this.state.modal = {};
-    let self = this;
-    this._alertifyManager = React.createRef();
+    let _self = this;
+    this._alertifyManagerRef = React.createRef();
+    this._blockUiRef = React.createRef();
     this.render = () => {
       return (
         <>
-          <Backdrop
-            style={{ zIndex: 9999, color: "#fff" }}
-            open={self.state.statusLoader ? self.state.statusLoader : false}
-          >
-            <CircularProgress color="inherit" />
-          </Backdrop>
-          <CustomModal onClose={this.closeModal} {...self.state.modal} />
-          <AlertifyManager innerRef={this._alertifyManager} />
+          <Loading innerRef={this._blockUiRef} />
+          <CustomModal onClose={this.closeModal} {..._self.state.modal} />
+          <AlertifyManager innerRef={this._alertifyManagerRef} />
           {this.renderBody()}
         </>
       );
     };
   }
+  blockUi = () => {
+    this._blockUiRef.current && this._blockUiRef.current.open();
+  };
+  unBlockUi = () => {
+    this._blockUiRef.current && this._blockUiRef.current.close();
+  };
   renderBody() {
     throw "method render body must be override";
   }
@@ -85,13 +86,16 @@ class BaseComponent extends React.Component {
     });
   };
   success(content) {
-    return this._alertifyManager.current.addNewAlertify(content, "success");
+    this._alertifyManagerRef.current &&
+      this._alertifyManagerRef.current.addNewAlertify(content, "success");
   }
   warning(content) {
-    return this._alertifyManager.current.addNewAlertify(content, "warning");
+    this._alertifyManagerRef.current &&
+      this._alertifyManagerRef.current.addNewAlertify(content, "warning");
   }
   error(content) {
-    return this._alertifyManager.current.addNewAlertify(content, "error");
+    this._alertifyManagerRef.current &&
+      this._alertifyManagerRef.current.addNewAlertify(content, "error");
   }
   getUserId() {
     return sensitiveStorage.getUserId();
@@ -105,11 +109,9 @@ class BaseComponent extends React.Component {
       1}-${nowDate.getDate()}`;
   }
   _sendAjax = (_method, params) => {
+    let _self = this;
     if (!params.url) {
       throw "expected `url` parameter";
-    }
-    if (typeof params.blockUI == "undefined") {
-      params.blockUI = false;
     }
     // const baseUrl = window.applicationBaseUrl ? window.applicationBaseUrl : "";
     const serviceHost = Configs.serviceHost;
@@ -128,6 +130,9 @@ class BaseComponent extends React.Component {
       contentType: params.noContentType
         ? undefined
         : "application/json; charset=utf-8",
+      beforeSend: function(xhr) {
+        _self.blockUi();
+      },
       success: (result, status, xhr) => {
         let xhrParse = JSON.parse(xhr.getResponseHeader("X-Responded-JSON"));
         if (xhrParse && xhrParse.status == 401) {
@@ -146,6 +151,9 @@ class BaseComponent extends React.Component {
       error: (jqXHR, textStatus, errorThrown) => {
         typeof params.error === "function" &&
           params.error(jqXHR, textStatus, errorThrown);
+      },
+      complete: () => {
+        _self.unBlockUi();
       },
     });
   };

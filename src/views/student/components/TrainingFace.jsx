@@ -6,6 +6,8 @@ import {
   Grid,
   IconButton,
   Typography,
+  FormControlLabel,
+  Switch,
 } from "@material-ui/core";
 import Webcam from "react-webcam";
 import { sensitiveStorage } from "core/services/SensitiveStorage";
@@ -18,7 +20,7 @@ class TrainingFace extends BaseComponent {
   constructor(props) {
     super(props);
     this.state = {
-      trainImages: [],
+      review: false,
     };
     this.webcamRef = React.createRef();
     this.videoConstraints = {
@@ -44,7 +46,23 @@ class TrainingFace extends BaseComponent {
       data: data,
       success: (r) => {
         trainingImages.push(r.data);
-        this.setState({});
+        this.setState({}, () => {
+          if (this.state.review) {
+            this.openModal({
+              content: (
+                <Image
+                  width="auto"
+                  height="auto"
+                  src={`data:image/png;base64,${r.data.base64Image}`}
+                />
+              ),
+              style: {
+                width: "fit-content",
+                height: "fit-content",
+              },
+            });
+          }
+        });
         this.success(r.messages[0]);
       },
       unsuccess: (r) => {
@@ -83,6 +101,7 @@ class TrainingFace extends BaseComponent {
   };
   renderBody() {
     const { classes, trainingImages } = this.props;
+    const { review } = this.state;
     console.log("training face");
     return (
       <Grid container style={{ overflowY: "auto" }}>
@@ -90,10 +109,21 @@ class TrainingFace extends BaseComponent {
           <GetImage onGetImage={this._onGetImage} />
         </Grid>
         <Grid item xs={12}>
-          <div className={classes.subTitle}>
-            <Typography variant="h6">
+          <div className={classes.subTitleWrapper}>
+            <Typography variant="h6" className={classes.subTitle}>
               {`Ảnh đã train (${trainingImages.length})`}
             </Typography>
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={review}
+                  onChange={() => {
+                    this.setState({ review: !review });
+                  }}
+                />
+              }
+              label="Xem lại"
+            />
           </div>
           <div className={classes.imageWrapper}>
             {trainingImages.map((t) => (
@@ -128,13 +158,16 @@ export default withStyles({
     borderBottom: "1px solid #ccc",
     textTransform: "uppercase",
   },
-  subTitle: {
-    padding: "15px 30px 10px",
+  subTitleWrapper: {
     borderBottom: "1px solid #ccc",
-    textTransform: "capitalize",
-    fontWeight: "normal",
     display: "flex",
     justifyContent: "space-between",
+    flexDirection: "row",
+  },
+  subTitle: {
+    padding: "15px 30px 10px",
+    textTransform: "capitalize",
+    fontWeight: "normal",
   },
   image: {
     cursor: "pointer",

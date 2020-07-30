@@ -1,7 +1,6 @@
 import React from "react";
 import withStyles from "@material-ui/core/styles/withStyles";
 import cx from "classnames";
-
 class AlertifyManager extends React.Component {
   constructor(props) {
     super(props);

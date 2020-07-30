@@ -14,10 +14,10 @@ import Typography from "@material-ui/core/Typography";
 import { createMuiTheme } from "@material-ui/core/styles";
 import { withStyles } from "@material-ui/core";
 import { withRouter, Redirect } from "react-router-dom";
-import localStorage from "../core/services/LocalStorage";
-import BaseComponent from "../core/BaseComponent/BaseComponent";
-import { sensitiveStorage } from "../core/services/SensitiveStorage";
-import imageBackground from "../assets/img/hcmus-249896_960_720.jpg";
+import localStorage from "core/services/LocalStorage";
+import BaseComponent from "core/BaseComponent/BaseComponent";
+import { sensitiveStorage } from "core/services/SensitiveStorage";
+import imageBackground from "assets/img/hcmus-249896_960_720.jpg";
 import { UserRole } from "core/Enum";
 
 function Copyright() {
@@ -120,9 +120,9 @@ class Login extends BaseComponent {
     this.ajaxPost({
       url: "/api/account/login",
       data: loginInfor,
+      blockUI: true,
       success: (apiResult) => {
         this.login(apiResult);
-        this.success(apiResult.messages[0]);
       },
       unsuccess: (apiResult) => {
         this.error(apiResult.messages[0]);

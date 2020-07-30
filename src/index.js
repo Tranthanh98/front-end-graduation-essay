@@ -10,16 +10,17 @@ import Login from './layouts/Login';
 import "assets/css/material-dashboard-react.css?v=1.8.0";
 import Student from "layouts/Student";
 import Admin from "layouts/Admin";
+import BaseComponent from "core/BaseComponent/BaseComponent";
 
 const hist = createBrowserHistory();
 
-class Root extends React.Component {
+class Root extends BaseComponent {
   constructor(props) {
     super(props);
     this.state = {
     }
   }
-  render() {
+  renderBody() {
     return (
       <Router history={hist}>
         <Switch>

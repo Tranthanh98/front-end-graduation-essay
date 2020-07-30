@@ -9,7 +9,7 @@ import { Router, Route, Switch, Redirect } from "react-router-dom";
 import Login from './layouts/Login';
 import "assets/css/material-dashboard-react.css?v=1.8.0";
 import Student from "layouts/Student";
-import Admin from "layouts/Admin";
+import Teacher from "layouts/Teacher";
 import BaseComponent from "core/BaseComponent/BaseComponent";
 
 const hist = createBrowserHistory();
@@ -24,8 +24,7 @@ class Root extends BaseComponent {
     return (
       <Router history={hist}>
         <Switch>
-          {/* <Route path="/" render={(props) => <CheckLogin {...props} />} /> */}
-          <Route path="/teacher" render={(props) => <Admin {...props} />} />
+          <Route path="/teacher" render={(props) => <Teacher {...props} />} />
           <Route path="/student" render={(props) => <Student {...props} />} />
           <Route path="/login" render={(props) => <Login {...props} />} />
           <Redirect to={{ pathname: "/login" }} />

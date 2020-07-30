@@ -57,8 +57,8 @@ class TrainingFace extends BaseComponent {
                 />
               ),
               style: {
-                width: "fit-content",
-                height: "fit-content",
+                maxWidth: "80vw",
+                maxHeight: "80vh",
               },
             });
           }

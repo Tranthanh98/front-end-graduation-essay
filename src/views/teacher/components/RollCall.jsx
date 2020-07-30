@@ -75,8 +75,8 @@ class RollCall extends BaseComponent {
                 />
               ),
               style: {
-                width: "fit-content",
-                height: "fit-content",
+                maxWidth: "80vw",
+                maxHeight: "80vh",
               },
             });
           }
@@ -88,14 +88,10 @@ class RollCall extends BaseComponent {
       },
     });
   };
-  _updateClassSchedule = () => {
+  _getClassScheduleFullData = () => {
     let { classSchedule } = this.props;
-    if (classSchedule.status == ClassStatus.schedule) {
-      classSchedule.status = ClassStatus.opening;
-    }
-    this.ajaxPost({
-      url: "/api/teacher/UpdateClassSchedule",
-      data: classSchedule,
+    this.ajaxGet({
+      url: `/api/class/getClassScheduleFullData?classScheduleId=${classSchedule.id}`,
       success: (r) => {
         this.loadData = true;
         Object.keys(classSchedule).forEach((i) => {
@@ -109,7 +105,7 @@ class RollCall extends BaseComponent {
     });
   };
   componentDidMount() {
-    this._updateClassSchedule();
+    this._getClassScheduleFullData();
   }
   _onChangeDiemDanh = (studying) => {
     const { classSchedule } = this.props;
@@ -126,13 +122,35 @@ class RollCall extends BaseComponent {
         } else {
           classSchedule.rollCalls.push(r.data);
         }
-        this.setState({});
-        this.success(r.messages[0]);
+        this.setState({}, () => {
+          this.success(r.messages[0]);
+        });
       },
       unsuccess: (r) => {
         this.error(r.messages[0]);
       },
     });
+  };
+  _closeClass = () => {
+    const { classSchedule } = this.props;
+    this.ajaxGet({
+      url: `/api/class/closeClass?classScheduleId=${classSchedule.id}`,
+      success: (r) => {
+        classSchedule.status = r.data.status;
+        this.setState({}, () => {
+          this.success(r.messages[0]);
+        });
+      },
+      error: (r) => {
+        this.error(r.messages[0]);
+      },
+    });
+  };
+  _onClickCloseClassBtn = () => {
+    const a = window.confirm("Bạn chắc chắn muốn đóng lớp học này?");
+    if (a) {
+      this._closeClass();
+    }
   };
   renderBody() {
     const { classes, classSchedule } = this.props;
@@ -140,24 +158,38 @@ class RollCall extends BaseComponent {
     console.log("roll call");
     return (
       <Grid container style={{ overflowY: "auto" }}>
-        <Grid item xs={12}>
-          <GetImage onGetImage={this._onGetImage} />
-        </Grid>
+        {classSchedule.status != ClassStatus.closed ? (
+          <Grid item xs={12}>
+            <GetImage onGetImage={this._onGetImage} />
+          </Grid>
+        ) : null}
         <Grid item xs={12} className={classes.subTitleWrapper}>
           <Typography variant="h6" className={classes.subTitle}>
             Danh sách sinh viên
           </Typography>
-          <FormControlLabel
-            control={
-              <Switch
-                checked={review}
-                onChange={() => {
-                  this.setState({ review: !review });
-                }}
+          {classSchedule.status != ClassStatus.closed ? (
+            <>
+              <Button
+                onClick={this._onClickCloseClassBtn}
+                color="secondary"
+                variant="outlined"
+                style={{ margin: "8px" }}
+              >
+                Đóng lớp
+              </Button>
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={review}
+                    onChange={() => {
+                      this.setState({ review: !review });
+                    }}
+                  />
+                }
+                label="Xem lại"
               />
-            }
-            label="Xem lại"
-          />
+            </>
+          ) : null}
         </Grid>
         <Grid item xs={12}>
           {this.loadData ? (

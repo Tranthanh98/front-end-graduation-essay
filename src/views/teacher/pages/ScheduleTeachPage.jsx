@@ -2,14 +2,12 @@ import React from "react";
 import { withStyles } from "@material-ui/core/styles";
 import GridItem from "components/Grid/GridItem.js";
 import GridContainer from "components/Grid/GridContainer.js";
-import { Typography, IconButton } from "@material-ui/core";
+import { Typography, Button } from "@material-ui/core";
 import { sensitiveStorage } from "core/services/SensitiveStorage";
 import BaseComponent from "core/BaseComponent/BaseComponent";
-import RCSTable from "views/general/RCSTable";
-import { OpenInNew as OpenIcon } from "@material-ui/icons";
 import CardBody from "components/Card/CardBody";
 import Card from "components/Card/Card";
-import { DayOfWeek, ClassStatus } from "core/Enum";
+import { ClassStatus } from "core/Enum";
 import CardHeader from "components/Card/CardHeader";
 import CardIcon from "components/Card/CardIcon";
 import CardFooter from "components/Card/CardFooter";
@@ -20,11 +18,13 @@ import {
   KeyboardDatePicker,
 } from "@material-ui/pickers";
 import DateFnsUtils from "@date-io/date-fns";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import RollCall from "views/teacher/components/RollCall";
 import { differenceInDays } from "date-fns";
-import TeacherClassDetail from "views/teacher/components/TeacherClassDetail";
+import {
+  QueryBuilder as QueryBuilderIcon,
+  AlarmOn as AlarmOnIcon,
+  RoomOutlined as RoomIcon,
+} from "@material-ui/icons";
 
 class ScheduleTeachPage extends BaseComponent {
   constructor(props) {
@@ -34,7 +34,6 @@ class ScheduleTeachPage extends BaseComponent {
       date: new Date(),
     };
     this.teacherId = sensitiveStorage.getTeacherId();
-    window.differenceInDays = differenceInDays;
   }
   _getAllClassOfTeacher = () => {
     this.ajaxGet({
@@ -47,14 +46,24 @@ class ScheduleTeachPage extends BaseComponent {
       },
     });
   };
-  _onClickClassDetailBtn = (classOfTeacher) => {
-    this.openModal({
-      content: <TeacherClassDetail classOfTeacher={classOfTeacher} />,
-      title: `${classOfTeacher.name} - ${classOfTeacher.subject.name}`,
-      fullScreen: true,
+  _openClass = (classSchedule) => {
+    this.ajaxGet({
+      url: `/api/class/openClass?classScheduleId=${classSchedule.id}`,
+      success: (r) => {
+        this._openClassRollCall(classSchedule);
+      },
+      error: (r) => {
+        this.error(r.messages[0]);
+      },
     });
   };
   _onClickClassInDateBtn = (classSchedule) => {
+    if (classSchedule.status == ClassStatus.schedule) {
+      const a = window.confirm("Bạn chắc chắn muốn mở lớp học này?");
+      if (a) this._openClass();
+    } else this._openClassRollCall(classSchedule);
+  };
+  _openClassRollCall = (classSchedule) => {
     this.openModal({
       content: <RollCall classSchedule={classSchedule} />,
       title: "Điểm danh",
@@ -73,159 +82,132 @@ class ScheduleTeachPage extends BaseComponent {
     var classInDate = 0;
     return (
       <div>
-        <GridContainer>
-          <GridItem xs={12}>
-            <Card profile style={{ marginTop: 0 }}>
-              <CardHeader color="primary" className={classes.header}>
-                <Typography variant="h5">Lớp học trong ngày</Typography>
-              </CardHeader>
-              <CardBody>
-                <GridContainer>
-                  <GridItem
-                    xs={12}
-                    style={{ display: "flex", justifyContent: "flex-end" }}
-                  >
-                    <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                      <KeyboardDatePicker
-                        margin="normal"
-                        id="date-picker-dialog"
-                        label="Chọn ngày"
-                        format="dd/MM/yyyy"
-                        value={date}
-                        onChange={this._onChangeDate}
-                        KeyboardButtonProps={{
-                          "aria-label": "change date",
-                        }}
-                        inputProps={{
-                          style: { textAlign: "center" },
-                        }}
-                        color="secondary"
-                        inputVariant="outlined"
-                        variant="inline"
-                      />
-                    </MuiPickersUtilsProvider>
-                  </GridItem>
-                  {classesOfTeacher.map((c) => {
-                    return c.classSchedules.map((cs) => {
-                      if (differenceInDays(date, new Date(cs.datetime)) == 0) {
-                        classInDate++;
-                        const color =
-                          cs.status == ClassStatus.shedule
-                            ? "danger"
-                            : cs.status == ClassStatus.opening
-                            ? "warning"
-                            : "success";
-                        return (
-                          <GridItem
-                            xs={6}
-                            sm={6}
-                            md={4}
-                            key={`${cs.classId}${cs.datetime}`}
+        <Card profile style={{ marginTop: 0 }}>
+          <CardHeader color="primary" className={classes.header}>
+            <Typography variant="h5">Lớp học trong ngày</Typography>
+          </CardHeader>
+          <CardBody>
+            <GridContainer>
+              <GridItem
+                xs={12}
+                style={{ display: "flex", justifyContent: "flex-end" }}
+              >
+                <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                  <KeyboardDatePicker
+                    margin="normal"
+                    id="date-picker-dialog"
+                    label="Chọn ngày"
+                    format="dd/MM/yyyy"
+                    value={date}
+                    onChange={this._onChangeDate}
+                    KeyboardButtonProps={{
+                      "aria-label": "change date",
+                    }}
+                    inputProps={{
+                      style: { textAlign: "center" },
+                    }}
+                    color="secondary"
+                    inputVariant="outlined"
+                    variant="inline"
+                  />
+                </MuiPickersUtilsProvider>
+              </GridItem>
+              {classesOfTeacher.map((c) => {
+                return c.classSchedules.map((cs) => {
+                  if (differenceInDays(date, new Date(cs.datetime)) == 0) {
+                    classInDate++;
+                    const color =
+                      cs.status == ClassStatus.schedule
+                        ? "info"
+                        : cs.status == ClassStatus.opening
+                        ? "warning"
+                        : "success";
+                    return (
+                      <GridItem
+                        xs={12}
+                        sm={6}
+                        md={4}
+                        xl={3}
+                        key={`${cs.classId}${cs.datetime}`}
+                      >
+                        <Card>
+                          <CardHeader color={color} stats icon>
+                            <CardIcon color={color}>
+                              <Typography variant="h6">
+                                {moment(cs.datetime).format("HH:mm")}
+                              </Typography>
+                            </CardIcon>
+                          </CardHeader>
+                          <GridContainer
+                            style={{ padding: "10px", textAlign: "left" }}
                           >
-                            <Card>
-                              <CardHeader color={color} stats icon>
-                                <CardIcon color={color}>
-                                  <Typography variant="h6">
-                                    {moment(cs.datetime).format("hh:mm")}
-                                  </Typography>
-                                </CardIcon>
-                              </CardHeader>
-                              <div
-                                style={{ padding: "10px", textAlign: "left" }}
+                            <GridItem xs={12}>
+                              <Typography variant="h6">
+                                {c.subject.name}
+                              </Typography>
+                            </GridItem>
+                            <GridItem xs={12}>
+                              <Typography
+                                variant="body1"
+                                className={classes.body1}
                               >
-                                <Typography variant="h6">
-                                  {c.subject.name}
-                                </Typography>
-                                <Typography variant="body1">
-                                  Phòng: {c.room}
-                                </Typography>
-                                <Typography variant="body1">
-                                  Trạng thái: {ClassStatusName[cs.status]}
-                                </Typography>
-                              </div>
-                              <CardFooter stats>
-                                <Typography>
-                                  {cs.status == ClassStatus.shedule
-                                    ? "Mở lớp và điểm danh"
-                                    : cs.status == ClassStatus.opening
-                                    ? "Tham gia lớp học"
-                                    : "Xem chi tiết"}
-                                </Typography>
-                                <IconButton
-                                  onClick={(e) => {
-                                    this._onClickClassInDateBtn(cs);
-                                  }}
-                                >
-                                  <FontAwesomeIcon
-                                    icon={faArrowRight}
-                                    color="#00acc1"
-                                  />
-                                </IconButton>
-                              </CardFooter>
-                            </Card>
-                          </GridItem>
-                        );
-                      }
-                    });
-                  })}
-                  {classInDate == 0 ? (
-                    <Typography
-                      variant="body1"
-                      style={{ fontStyle: "italic", padding: "0 10px" }}
-                    >
-                      Hôm nay bạn không có lớp học.
-                    </Typography>
-                  ) : null}
-                </GridContainer>
-              </CardBody>
-            </Card>
-          </GridItem>
-        </GridContainer>
-        <GridContainer>
-          <GridItem xs={12} sm={12} md={12}>
-            <Card profile style={{ marginTop: 0 }}>
-              <CardHeader color="primary" className={classes.header}>
-                <Typography variant="h5">Lịch dạy trong tuần</Typography>
-              </CardHeader>
-              <CardBody style={{ padding: "25px 20px 30px" }}>
-                <RCSTable
-                  data={classesOfTeacher}
-                  emptyText={"Bạn không có lịch dạy nào trong tuần."}
-                  head={(Cell) => (
-                    <React.Fragment>
-                      <Cell>Mã Môn</Cell>
-                      <Cell>Tên Môn</Cell>
-                      <Cell>Lớp</Cell>
-                      <Cell>Thời gian</Cell>
-                      <Cell>Chi tiết</Cell>
-                    </React.Fragment>
-                  )}
-                  body={(row, Cell) => (
-                    <React.Fragment>
-                      <Cell>{row.subject.id}</Cell>
-                      <Cell>{row.subject.name}</Cell>
-                      <Cell>{row.name}</Cell>
-                      <Cell>{`${DayOfWeek[row.day]} (${
-                        row.startSession
-                      }-${row.startSession +
-                        row.quantityOfSession -
-                        1})`}</Cell>
-                      <Cell>
-                        <IconButton
-                          onClick={() => {
-                            this._onClickClassDetailBtn(row);
-                          }}
-                        >
-                          <OpenIcon />
-                        </IconButton>
-                      </Cell>
-                    </React.Fragment>
-                  )}
-                />
-              </CardBody>
-            </Card>
-          </GridItem>
-        </GridContainer>
+                                <RoomIcon className={classes.icon} /> {c.room}
+                              </Typography>
+                            </GridItem>
+                            <GridItem xs={6}>
+                              <Typography
+                                variant="body1"
+                                className={classes.body1}
+                              >
+                                <QueryBuilderIcon className={classes.icon} />
+                                {cs.status != ClassStatus.schedule
+                                  ? moment(cs.startDatetime).format("HH:mm")
+                                  : "_____"}
+                              </Typography>
+                            </GridItem>
+                            <GridItem xs={6}>
+                              <Typography
+                                variant="body1"
+                                className={classes.body1}
+                              >
+                                <AlarmOnIcon className={classes.icon} />
+                                {cs.status == ClassStatus.closed
+                                  ? moment(cs.endDatetime).format("HH:mm")
+                                  : "_____"}
+                              </Typography>
+                            </GridItem>
+                          </GridContainer>
+                          <CardFooter stats>
+                            <Button
+                              onClick={() => {
+                                this._onClickClassInDateBtn(cs);
+                              }}
+                              color="primary"
+                            >
+                              {cs.status == ClassStatus.schedule
+                                ? "Mở lớp"
+                                : cs.status == ClassStatus.opening
+                                ? "Tham gia lớp học"
+                                : "Xem chi tiết"}
+                            </Button>
+                          </CardFooter>
+                        </Card>
+                      </GridItem>
+                    );
+                  }
+                });
+              })}
+              {classInDate == 0 ? (
+                <Typography
+                  variant="body1"
+                  style={{ fontStyle: "italic", padding: "0 10px" }}
+                >
+                  Hôm nay bạn không có lớp học.
+                </Typography>
+              ) : null}
+            </GridContainer>
+          </CardBody>
+        </Card>
       </div>
     );
   }
@@ -250,5 +232,13 @@ const styleLocal = {
     alignItems: "center",
     justifyContent: "space-between",
   },
+  body1: {
+    display: "flex",
+    flex: "row",
+    alignItems: "center",
+    fontSize: "1.1rem",
+    margin: "6px 4px",
+  },
+  icon: { marginRight: "4px" },
 };
 export default withStyles(styleLocal)(ScheduleTeachPage);

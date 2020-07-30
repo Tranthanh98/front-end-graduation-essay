@@ -36,6 +36,8 @@ class Image extends BaseComponent {
           style={{
             width: width ? width : "100px",
             height: height ? height : "100px",
+            maxHeight: "90vw",
+            maxWidth: "80vw",
             ...style,
           }}
         />

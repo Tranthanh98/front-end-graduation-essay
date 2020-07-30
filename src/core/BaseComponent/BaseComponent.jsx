@@ -61,12 +61,12 @@ class BaseComponent extends React.Component {
       sensitiveStorage.setUserId(user.id);
       sensitiveStorage.setUserRole(user.role);
       sensitiveStorage.setTeacherId(user.teacher.id);
-      this.goTo("/teacher/lich-giang-day");
+      this.goTo("/teacher/teaching-schedule");
     } else if (user.role == UserRole.student) {
       sensitiveStorage.setUserId(user.id);
       sensitiveStorage.setUserRole(user.role);
       sensitiveStorage.setStudentId(user.student.id);
-      this.goTo("/student/information");
+      this.goTo("/student/subject");
     } else this._error("Bạn không thể đăng nhâp vào hệ thống.");
   };
   logout = () => {

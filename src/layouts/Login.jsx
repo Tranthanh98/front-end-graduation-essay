@@ -13,8 +13,7 @@ import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import Typography from "@material-ui/core/Typography";
 import { createMuiTheme } from "@material-ui/core/styles";
 import { withStyles } from "@material-ui/core";
-import { withRouter, Redirect } from "react-router-dom";
-import localStorage from "core/services/LocalStorage";
+import { withRouter } from "react-router-dom";
 import BaseComponent from "core/BaseComponent/BaseComponent";
 import { sensitiveStorage } from "core/services/SensitiveStorage";
 import imageBackground from "assets/img/hcmus-249896_960_720.jpg";
@@ -148,20 +147,16 @@ class Login extends BaseComponent {
     const userId = sensitiveStorage.getUserId();
     const userRole = sensitiveStorage.getUserRole();
     if (userId && userRole == UserRole.teacher) {
-      this.goTo("/teacher/lich-giang-day");
+      this.goTo("/teacher/teaching-schedule");
     } else if (userId && userRole == UserRole.student) {
-      this.goTo("/student/student-information");
+      this.goTo("/student/subject");
     } else {
       sensitiveStorage.removeUserId();
       sensitiveStorage.removeUserRole();
     }
   };
   renderBody() {
-    const theme = createMuiTheme();
     const { classes } = this.props;
-    const { from } = this.props.location.state || {
-      from: { pathname: "/teacher/lich-giang-day" },
-    };
     return (
       <Grid container component="main" className={classes.root}>
         <CssBaseline />

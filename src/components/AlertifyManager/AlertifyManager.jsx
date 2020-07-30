@@ -26,12 +26,16 @@ class AlertifyManager extends React.Component {
     const { notifications } = this.state;
     return (
       <div className={classes.root}>
-        {notifications.map((n) => {
+        {notifications.map((n, i) => {
           var notificationClassName = cx({
             [classes.notification]: true,
             [classes[n.type]]: true,
           });
-          return <p className={notificationClassName}>{n.content}</p>;
+          return (
+            <p key={"alertifi" + i} className={notificationClassName}>
+              {n.content}
+            </p>
+          );
         })}
       </div>
     );
@@ -50,7 +54,7 @@ export default withStyles({
   notification: {
     width: "250px",
     padding: "16px",
-    margin: "8px",
+    marginTop: "8px",
     color: "#fff",
     borderRadius: "5px",
     backgroundColor: "#aaa",

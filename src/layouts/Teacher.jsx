@@ -9,22 +9,16 @@ import { withStyles } from "@material-ui/core";
 import Navbar from "components/Navbars/Navbar.js";
 import Footer from "components/Footer/Footer.js";
 import Sidebar from "components/Sidebar/Sidebar.js";
-import FixedPlugin from "components/FixedPlugin/FixedPlugin.js";
-
 import { teacherRoutes } from "routes.js";
-
 import styles from "assets/jss/material-dashboard-react/layouts/adminStyle.js";
-
 import bgImage from "assets/img/sidebar-2.jpg";
 import logo from "assets/img/logo-khtn.png";
-import localStorage from "core/services/LocalStorage";
-import { sensitiveStorage } from "../core/services/SensitiveStorage";
-import * as httpClient from "core/HttpClient";
+import { sensitiveStorage } from "core/services/SensitiveStorage";
 import BaseComponent from "core/BaseComponent/BaseComponent";
 import { UserRole } from "core/Enum";
 
 let ps;
-class Admin extends BaseComponent {
+class Teacher extends BaseComponent {
   constructor(props) {
     super(props);
     this.state = {
@@ -35,7 +29,7 @@ class Admin extends BaseComponent {
       nowClass: null,
     };
     this.mainPanel = React.createRef();
-    this.scheduleRefs = React.createRef();
+    this.dashboardRef = React.createRef();
     this.userId = sensitiveStorage.getUserId();
     this.userRole = sensitiveStorage.getUserRole();
   }
@@ -58,8 +52,8 @@ class Admin extends BaseComponent {
                     <Component
                       {...props}
                       ref={
-                        prop.path == "/lich-giang-day"
-                          ? this.scheduleRefs
+                        prop.path == "/teaching-schedule"
+                          ? this.dashboardRef
                           : null
                       }
                       nowClass={this.state.nowClass}
@@ -73,8 +67,8 @@ class Admin extends BaseComponent {
             })}
           </React.Fragment>
         ) : (
-            <Redirect to={{ pathname: "/login" }} />
-          )}
+          <Redirect to={{ pathname: "/login" }} />
+        )}
       </Switch>
     );
   };
@@ -129,34 +123,7 @@ class Admin extends BaseComponent {
       window.removeEventListener("resize", self.resizeFunction);
     };
   }
-  // updateNowClass = async (value) => {
-  //   if (value == null) {
-  //     let data = {
-
-
-  //       idClass: localStorage.getItem("DAY_HOC").id,
-  //       status: EnumStatusClass.closed,
-  //       teacherId: this.getUserId(),
-  //       date: this.formatDateTime(
-  //         new Date(localStorage.getItem("DAY_HOC").date),
-  //         "YYYY-MM-DD"
-  //       ),
-  //     };
-  //     let response = await httpClient.sendPost("/update-status-class", data);
-  //     if (this.validateApi(response)) {
-  //       localStorage.removeItem("DAY_HOC");
-  //     }
-  //   }
-  //   console.log("ref schedule :", this.scheduleRefs);
-  //   if (this.scheduleRefs.current != null) {
-  //     this.scheduleRefs.current._onChangeDate(new Date());
-  //   }
-
-  //   this.setState({
-  //     nowClass: value,
-  //   });
-  // };
-  updateNowClass = () => { }
+  updateNowClass = () => {};
   renderBody() {
     const { classes } = this.props;
     return (
@@ -169,7 +136,7 @@ class Admin extends BaseComponent {
           handleDrawerToggle={this.handleDrawerToggle}
           open={this.state.mobileOpen}
           color={this.state.color}
-        // {...rest}
+          // {...rest}
         />
         <div className={classes.mainPanel} ref={this.mainPanel}>
           <Navbar
@@ -187,4 +154,4 @@ class Admin extends BaseComponent {
     );
   }
 }
-export default withStyles(styles)(Admin);
+export default withStyles(styles)(Teacher);

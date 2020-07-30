@@ -1,6 +1,6 @@
 import React from "react";
 import BaseComponent from "core/BaseComponent/BaseComponent";
-import { withStyles, IconButton } from "@material-ui/core";
+import { withStyles, IconButton, Typography } from "@material-ui/core";
 import RCSTable from "views/general/RCSTable";
 import { OpenInNew as OpenIcon } from "@material-ui/icons";
 import { DayOfWeek } from "core/Enum";
@@ -8,6 +8,7 @@ import { sensitiveStorage } from "core/services/SensitiveStorage";
 import Card from "components/Card/Card";
 import CardBody from "components/Card/CardBody";
 import StudentClassDetail from "views/student/components/StudentClassDetail";
+import CardHeader from "components/Card/CardHeader";
 
 class SubjectPage extends BaseComponent {
   constructor(props) {
@@ -43,6 +44,9 @@ class SubjectPage extends BaseComponent {
     console.log("subject page");
     return (
       <Card profile style={{ marginTop: 0 }}>
+        <CardHeader color="primary" className={classes.header}>
+          <Typography variant="h5">Môn học đã đăng ký</Typography>
+        </CardHeader>
         <CardBody style={{ padding: "25px 20px 30px" }}>
           <RCSTable
             emptyText="Bạn chưa đăng ký môn học nào cả"
@@ -85,5 +89,10 @@ export default withStyles({
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
+  },
+  header: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
   },
 })(SubjectPage);

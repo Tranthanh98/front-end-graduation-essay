@@ -9,11 +9,8 @@ import { withStyles } from "@material-ui/core";
 import Navbar from "components/Navbars/Navbar.js";
 import Footer from "components/Footer/Footer.js";
 import Sidebar from "components/Sidebar/Sidebar.js";
-
 import { studentRoutes } from "routes.js";
-
 import styles from "assets/jss/material-dashboard-react/layouts/adminStyle.js";
-
 import bgImage from "assets/img/sidebar-2.jpg";
 import logo from "assets/img/logo-khtn.png";
 import { sensitiveStorage } from "core/services/SensitiveStorage";
@@ -50,7 +47,7 @@ class Student extends BaseComponent {
                     <Component
                       {...props}
                       ref={
-                        prop.path == "/information" ? this.dashboardRef : null
+                        prop.path == "/subject" ? this.dashboardRef : null
                       }
                     />
                   )}

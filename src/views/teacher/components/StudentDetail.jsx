@@ -85,6 +85,8 @@ class StudentDetail extends BaseComponent {
               <React.Fragment>
                 <Cell>Ngày học</Cell>
                 <Cell>Trạng thái</Cell>
+                <Cell>Thời gian bắt đầu</Cell>
+                <Cell>Thời gian kết thúc</Cell>
                 <Cell>Điểm danh</Cell>
               </React.Fragment>
             )}
@@ -92,6 +94,16 @@ class StudentDetail extends BaseComponent {
               <React.Fragment>
                 <Cell>{moment(row.datetime).format("DD/MM/yyyy")}</Cell>
                 <Cell>{ClassStatusName[row.status]}</Cell>
+                <Cell>
+                  {row.startDatetime
+                    ? moment(row.startDatetime).format("HH:mm")
+                    : null}
+                </Cell>
+                <Cell>
+                  {row.endDatetime
+                    ? moment(row.endDatetime).format("HH:mm")
+                    : null}
+                </Cell>
                 <Cell className={classes.celCenter}>
                   <Checkbox
                     checked={row.rollCalls.some(

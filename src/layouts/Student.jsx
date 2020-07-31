@@ -87,13 +87,11 @@ class Student extends BaseComponent {
     }
   };
   handleDrawerToggle = () => {
-    console.log("toggle");
     this.setState({
       mobileOpen: !this.state.mobileOpen,
     });
   };
   resizeFunction = () => {
-    console.log("resize");
     if (window.innerWidth >= 960) {
       this.setState({
         mobileOpen: false,

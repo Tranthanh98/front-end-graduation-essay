@@ -60,7 +60,7 @@ class ScheduleTeachPage extends BaseComponent {
   _onClickClassInDateBtn = (classSchedule) => {
     if (classSchedule.status == ClassStatus.schedule) {
       const a = window.confirm("Bạn chắc chắn muốn mở lớp học này?");
-      if (a) this._openClass();
+      if (a) this._openClass(classSchedule);
     } else this._openClassRollCall(classSchedule);
   };
   _openClassRollCall = (classSchedule) => {

@@ -61,8 +61,8 @@ class InfoPage extends BaseComponent {
     console.log("student information page");
     return (
       <React.Fragment>
-        <Grid container spacing={4}>
-          <Grid item xs={8}>
+        <Grid container spacing={4} style={{ flexWrap: "wrap-reverse" }}>
+          <Grid item xs={12} md={8}>
             <Card profile style={{ marginTop: 0 }}>
               <CardHeader color="primary">
                 <Typography
@@ -146,7 +146,7 @@ class InfoPage extends BaseComponent {
               </CardBody>
             </Card>
           </Grid>
-          <Grid item xs={4}>
+          <Grid item xs={12} md={4}>
             <Card style={{ marginTop: 0 }}>
               <CardAvatar profile style={{ margin: "-20px auto 0" }}>
                 <a href="#pablo" onClick={(e) => e.preventDefault()}>

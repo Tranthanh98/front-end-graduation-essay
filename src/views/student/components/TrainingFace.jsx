@@ -20,7 +20,7 @@ class TrainingFace extends BaseComponent {
   constructor(props) {
     super(props);
     this.state = {
-      review: false,
+      review: true,
     };
     this.webcamRef = React.createRef();
     this.videoConstraints = {
@@ -31,8 +31,66 @@ class TrainingFace extends BaseComponent {
     this.studentId = sensitiveStorage.getStudentId();
     this.upLoadFileRef = React.createRef();
   }
-  _onGetImage = (image) => {
+  _onGetImageCapture = (image) => {
     this._trainFace(image);
+  };
+  _onGetImageUpload = (image) => {
+    this._trainFaceByImageUpload(image);
+  };
+  _trainFaceByImageUpload = (image) => {
+    const { trainingImages } = this.props;
+    const data = new FormData();
+    data.append(this.studentId.toString(), image);
+    this.ajaxPost({
+      url: "/api/student/TrainStudentFaceByImageUpload",
+      data: data,
+      noDataType: true,
+      noProcessData: true,
+      noContentType: true,
+      success: (r) => {
+        trainingImages.push(r.data);
+        this.setState({}, () => {
+          if (this.state.review) {
+            this.openModal({
+              content: (
+                <Image
+                  width="auto"
+                  height="auto"
+                  src={`data:image/png;base64,${r.data.base64Image}`}
+                />
+              ),
+              style: {
+                maxWidth: "80vw",
+                maxHeight: "80vh",
+                width: "auto",
+                height: "auto",
+              },
+            });
+          }
+        });
+        this.success(r.messages[0]);
+      },
+      unsuccess: (r) => {
+        if (this.state.review) {
+          this.openModal({
+            content: (
+              <Image
+                width="auto"
+                height="auto"
+                src={`data:image/png;base64,${r.data.base64Image}`}
+              />
+            ),
+            style: {
+              maxWidth: "80vw",
+              maxHeight: "80vh",
+              width: "auto",
+              height: "auto",
+            },
+          });
+        }
+        this.error(r.messages[0]);
+      },
+    });
   };
   _trainFace = (image) => {
     const { trainingImages } = this.props;
@@ -106,7 +164,10 @@ class TrainingFace extends BaseComponent {
     return (
       <Grid container style={{ overflowY: "auto" }}>
         <Grid item xs={12}>
-          <GetImage onGetImage={this._onGetImage} />
+          <GetImage
+            onGetImageCapture={this._onGetImageCapture}
+            onGetImageUpload={this._onGetImageUpload}
+          />
         </Grid>
         <Grid item xs={12}>
           <div className={classes.subTitleWrapper}>

@@ -23,6 +23,9 @@ class SensitiveStorage {
   getStudentId() {
     return parseInt(storage.getItem("student_id"));
   }
+  removeStudentId() {
+    storage.removeItem("student_id");
+  }
 
   setTeacherId(id) {
     storage.setItem("teacher_id", `${id}`);
@@ -30,6 +33,10 @@ class SensitiveStorage {
 
   getTeacherId() {
     return parseInt(storage.getItem("teacher_id"));
+  }
+
+  removeTeacherId() {
+    storage.removeItem("teacher_id");
   }
 
   removeUserId() {

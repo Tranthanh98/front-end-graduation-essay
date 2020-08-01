@@ -19,6 +19,7 @@ import { isThisISOWeek } from "date-fns/esm";
 import { ClassStatus } from "core/Enum";
 import RCSTable from "views/general/RCSTable";
 import GetImage from "views/general/GetImage";
+import $ from "jquery";
 
 class RollCall extends BaseComponent {
   constructor(props) {
@@ -29,12 +30,87 @@ class RollCall extends BaseComponent {
       width: 1280,
       height: 720,
       facingMode: "environment",
+      file: null,
     };
     this.studentId = sensitiveStorage.getStudentId();
     this.loadData = false;
   }
-  _onGetImage = (image) => {
+  _onGetImageCapture = (image) => {
     this._rollCall(image);
+  };
+  _onGetImageUpload = (image) => {
+    this._rollCallByImageUpload(image);
+  };
+  _rollCallByImageUpload = (image) => {
+    let { classSchedule } = this.props;
+    const data = new FormData();
+    data.append(classSchedule.id.toString(), image);
+    this.ajaxPost({
+      url: "/api/Class/RollCallByImageUpload",
+      data: data,
+      noDataType: true,
+      noProcessData: true,
+      noContentType: true,
+      success: (r) => {
+        r.data.rollCalls.forEach((d) => {
+          let ok = false;
+          classSchedule.rollCalls.forEach((rc) => {
+            if (
+              rc.studentId == d.studentId &&
+              rc.classScheduleId == d.classScheduleId
+            ) {
+              Object.keys(d).map((i) => {
+                rc[i] = d[i];
+              });
+              ok = true;
+            }
+          });
+          if (!ok) {
+            classSchedule.rollCalls.push(d);
+          }
+        });
+        this.setState({}, () => {
+          if (this.state.review) {
+            this.openModal({
+              content: (
+                <Image
+                  width="auto"
+                  height="auto"
+                  src={`data:image/png;base64,${r.data.base64Image}`}
+                />
+              ),
+              style: {
+                maxWidth: "80vw",
+                maxHeight: "80vh",
+                width: "auto",
+                height: "auto",
+              },
+            });
+          }
+        });
+        this.success("Điểm danh thành công.");
+      },
+      unsuccess: (r) => {
+        if (this.state.review) {
+          this.openModal({
+            content: (
+              <Image
+                width="auto"
+                height="auto"
+                src={`data:image/png;base64,${r.data.base64Image}`}
+              />
+            ),
+            style: {
+              maxWidth: "80vw",
+              maxHeight: "80vh",
+              width: "auto",
+              height: "auto",
+            },
+          });
+        }
+        this.error(r.messages[0]);
+      },
+    });
   };
   _rollCall = (image) => {
     let { classSchedule } = this.props;
@@ -77,6 +153,8 @@ class RollCall extends BaseComponent {
               style: {
                 maxWidth: "80vw",
                 maxHeight: "80vh",
+                width: "auto",
+                height: "auto",
               },
             });
           }
@@ -160,55 +238,53 @@ class RollCall extends BaseComponent {
       <Grid container style={{ overflowY: "auto" }}>
         {classSchedule.status != ClassStatus.closed ? (
           <Grid item xs={12}>
-            <GetImage onGetImage={this._onGetImage} />
+            <GetImage
+              onGetImageCapture={this._onGetImageCapture}
+              onGetImageUpload={this._onGetImageUpload}
+            />
           </Grid>
         ) : null}
-        <Grid item xs={12} className={classes.subTitleWrapper}>
-          <Typography variant="h6" className={classes.subTitle}>
-            Danh sách sinh viên
-          </Typography>
-          {classSchedule.status != ClassStatus.closed ? (
-            <>
-              <Button
-                onClick={this._onClickCloseClassBtn}
-                color="secondary"
-                variant="outlined"
-                style={{ margin: "8px" }}
-              >
-                Đóng lớp
-              </Button>
-              <FormControlLabel
-                control={
-                  <Switch
-                    checked={review}
-                    onChange={() => {
-                      this.setState({ review: !review });
-                    }}
-                  />
-                }
-                label="Xem lại"
-              />
-            </>
-          ) : null}
-        </Grid>
+        {classSchedule.status != ClassStatus.closed ? (
+          <Grid item xs={12} className={classes.subTitleWrapper}>
+            <Button
+              onClick={this._onClickCloseClassBtn}
+              color="secondary"
+              variant="outlined"
+              style={{ margin: "8px" }}
+            >
+              Đóng lớp
+            </Button>
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={review}
+                  onChange={() => {
+                    this.setState({ review: !review });
+                  }}
+                />
+              }
+              label="Xem lại"
+            />
+          </Grid>
+        ) : null}
         <Grid item xs={12}>
           {this.loadData ? (
             <RCSTable
               data={classSchedule.class.studyings}
               head={(Cell) => (
                 <React.Fragment>
-                  <Cell>Mã số sinh viên</Cell>
-                  <Cell>Họ và tên</Cell>
-                  <Cell>Điểm danh</Cell>
-                  <Cell></Cell>
+                  <Cell className={classes.centerCell}>Mã số sinh viên</Cell>
+                  <Cell className={classes.centerCell}>Họ và tên</Cell>
+                  <Cell className={classes.centerCell}>Điểm danh</Cell>
+                  <Cell className={classes.centerCell}></Cell>
                 </React.Fragment>
               )}
               body={(row, Cell) => {
                 return (
                   <React.Fragment>
-                    <Cell>{row.student.id}</Cell>
+                    <Cell className={classes.centerCell}>{row.student.id}</Cell>
                     <Cell>{row.student.name}</Cell>
-                    <Cell>
+                    <Cell className={classes.centerCell}>
                       <Checkbox
                         checked={classSchedule.rollCalls.some(
                           (rc) => rc.studentId == row.student.id && rc.isActive
@@ -218,7 +294,7 @@ class RollCall extends BaseComponent {
                         }}
                       />
                     </Cell>
-                    <Cell className={classes.celCenter}>
+                    <Cell className={classes.centerCell}>
                       {classSchedule.rollCalls.some(
                         (rc) =>
                           rc.studentId == row.student.id && rc.imageId != null
@@ -269,5 +345,8 @@ export default withStyles({
     flexWrap: "nowrap",
     overflowX: "auto",
     margin: "0 8px",
+  },
+  centerCell: {
+    textAlign: "center",
   },
 })(RollCall);

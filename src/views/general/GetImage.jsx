@@ -33,11 +33,15 @@ class GetImage extends BaseComponent {
   }
   _onCapture = (e) => {
     var image = this.webcamRef.current.getScreenshot();
-    this._onChange(image);
+    this._onGetImageCapture(image);
   };
-  _onChange = (image) => {
-    const { onGetImage } = this.props;
-    typeof onGetImage === "function" && onGetImage(image);
+  _onGetImageCapture = (image) => {
+    const { onGetImageCapture } = this.props;
+    typeof onGetImageCapture === "function" && onGetImageCapture(image);
+  };
+  _onGetImageUpload = (image) => {
+    const { onGetImageUpload } = this.props;
+    typeof onGetImageUpload === "function" && onGetImageUpload(image);
   };
   _onClickUploadFile = (e) => {
     this.upLoadFileRef.current.click();
@@ -45,7 +49,8 @@ class GetImage extends BaseComponent {
   _onSelectImage = (e) => {
     const files = e.target.files;
     if (files.length > 0) {
-      this.getBase64(files[0], this._onChange);
+      console.log(files[0]);
+      this._onGetImageUpload(files[0]);
     }
   };
   getBase64(file, callback) {
@@ -59,8 +64,8 @@ class GetImage extends BaseComponent {
     };
   }
   renderBody() {
-    const { classes, onGetImage } = this.props;
-    console.log("get image");
+    const { classes } = this.props;
+    // console.log("get image");
     return (
       <div className={classes.root}>
         <Webcam

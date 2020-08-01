@@ -72,6 +72,8 @@ class BaseComponent extends React.Component {
   logout = () => {
     sensitiveStorage.removeUserId();
     sensitiveStorage.removeUserRole();
+    sensitiveStorage.removeStudentId();
+    sensitiveStorage.removeTeacherId();
     this.goTo("/login");
   };
   validateApi = (response) => {
@@ -117,21 +119,22 @@ class BaseComponent extends React.Component {
     const serviceHost = Configs.serviceHost;
     let fullUrl =
       params.url.indexOf("http") == 0 ? params.url : serviceHost + params.url;
-    $.ajax({
+    var a = {
       url: fullUrl,
       data: params.data,
       method: _method,
-      dataType: params.noDataType ? undefined : "json",
       headers: {
         ...params.headers,
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Methods": "GET,PUT,POST,DELETE,PATCH,OPTIONS",
       },
+      dataType: params.noDataType ? false : "json",
       contentType: params.noContentType
-        ? undefined
+        ? false
         : "application/json; charset=utf-8",
+      processData: params.noProcessData ? false : true,
       beforeSend: function(xhr) {
-        _self.blockUi();
+        !params.unBlockUi && _self.blockUi();
       },
       success: (result, status, xhr) => {
         let xhrParse = JSON.parse(xhr.getResponseHeader("X-Responded-JSON"));
@@ -153,9 +156,11 @@ class BaseComponent extends React.Component {
           params.error(jqXHR, textStatus, errorThrown);
       },
       complete: () => {
-        _self.unBlockUi();
+        !params.unBlockUi && _self.unBlockUi();
       },
-    });
+    };
+    console.log(a);
+    $.ajax(a);
   };
 
   JSONStringify(obj) {
@@ -163,7 +168,7 @@ class BaseComponent extends React.Component {
   }
 
   ajaxPost(options) {
-    options.data = this.JSONStringify(options.data);
+    if (!options.noDataType) options.data = this.JSONStringify(options.data);
     this._sendAjax("POST", options);
   }
 

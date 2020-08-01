@@ -57,22 +57,24 @@ class ClassManagement extends BaseComponent {
               emptyText={"Bạn không có lịch dạy nào trong tuần."}
               head={(Cell) => (
                 <React.Fragment>
-                  <Cell>Mã Môn</Cell>
-                  <Cell>Tên Môn</Cell>
-                  <Cell>Lớp</Cell>
-                  <Cell>Thời gian</Cell>
-                  <Cell>Chi tiết</Cell>
+                  <Cell className={classes.centerCell}>Mã Môn</Cell>
+                  <Cell className={classes.centerCell}>Tên Môn</Cell>
+                  <Cell className={classes.centerCell}>Lớp</Cell>
+                  <Cell className={classes.centerCell}>Thời gian</Cell>
+                  <Cell className={classes.centerCell}>Chi tiết</Cell>
                 </React.Fragment>
               )}
               body={(row, Cell) => (
                 <React.Fragment>
-                  <Cell>{row.subject.id}</Cell>
+                  <Cell className={classes.centerCell}>{row.subject.id}</Cell>
                   <Cell>{row.subject.name}</Cell>
-                  <Cell>{row.name}</Cell>
-                  <Cell>{`${DayOfWeek[row.day]} (${
-                    row.startSession
-                  }-${row.startSession + row.quantityOfSession - 1})`}</Cell>
-                  <Cell>
+                  <Cell className={classes.centerCell}>{row.name}</Cell>
+                  <Cell className={classes.centerCell}>{`${
+                    DayOfWeek[row.day]
+                  } (${row.startSession}-${row.startSession +
+                    row.quantityOfSession -
+                    1})`}</Cell>
+                  <Cell className={classes.centerCell}>
                     <IconButton
                       onClick={() => {
                         this._onClickClassDetailBtn(row);
@@ -109,6 +111,9 @@ const styleLocal = {
     display: "flex",
     alignItems: "center",
     justifyContent: "space-between",
+  },
+  centerCell: {
+    textAlign: "center",
   },
 };
 export default withStyles(styleLocal)(ClassManagement);

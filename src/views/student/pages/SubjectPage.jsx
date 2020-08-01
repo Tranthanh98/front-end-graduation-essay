@@ -53,20 +53,24 @@ class SubjectPage extends BaseComponent {
             data={studyings}
             head={(Cell) => (
               <React.Fragment>
-                <Cell>Mã môn học</Cell>
-                <Cell>Tên môn học</Cell>
-                <Cell>Lớp học</Cell>
-                <Cell>Ngày học</Cell>
-                <Cell>Xem chi tiết</Cell>
+                <Cell className={classes.centerCell}>Mã môn học</Cell>
+                <Cell className={classes.centerCell}>Tên môn học</Cell>
+                <Cell className={classes.centerCell}>Lớp học</Cell>
+                <Cell className={classes.centerCell}>Ngày học</Cell>
+                <Cell className={classes.centerCell}>Xem chi tiết</Cell>
               </React.Fragment>
             )}
             body={(row, Cell) => (
               <React.Fragment>
-                <Cell>{row.class.subject.id}</Cell>
+                <Cell className={classes.centerCell}>
+                  {row.class.subject.id}
+                </Cell>
                 <Cell>{row.class.subject.name}</Cell>
-                <Cell>{row.class.name}</Cell>
-                <Cell>{DayOfWeek[row.class.day]}</Cell>
-                <Cell className={classes.celCenter}>
+                <Cell className={classes.centerCell}>{row.class.name}</Cell>
+                <Cell className={classes.centerCell}>
+                  {DayOfWeek[row.class.day]}
+                </Cell>
+                <Cell className={classes.centerCell}>
                   <IconButton
                     onClick={() => {
                       this._onClickDetailBtn(row);
@@ -94,5 +98,8 @@ export default withStyles({
     display: "flex",
     alignItems: "center",
     justifyContent: "space-between",
+  },
+  centerCell: {
+    textAlign: "center",
   },
 })(SubjectPage);

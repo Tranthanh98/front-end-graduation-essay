@@ -11,11 +11,14 @@ import {
   FormLabel,
 } from "@material-ui/core";
 import { sensitiveStorage } from "core/services/SensitiveStorage";
-import { DayOfWeek } from "core/Enum";
 import RCSTable from "views/general/RCSTable";
 import moment from "moment";
-import { ClassStatus } from "core/Enum";
-import { ClassStatusName } from "core/Enum";
+import {
+  ClassStatus,
+  ClassStatusName,
+  RollCallType,
+  DayOfWeek,
+} from "core/Enum";
 import Image from "views/general/Image";
 
 class StudentClassDetail extends BaseComponent {
@@ -68,37 +71,41 @@ class StudentClassDetail extends BaseComponent {
             data={studying.class.classSchedules}
             head={(Cell) => (
               <React.Fragment>
-                <Cell>Ngày học</Cell>
-                <Cell>Trạng thái</Cell>
-                <Cell>Thời gian bắt đầu</Cell>
-                <Cell>Thời gian kết thúc</Cell>
-                <Cell>Điểm danh</Cell>
-                <Cell></Cell>
+                <Cell className={classes.centerCell}>Ngày học</Cell>
+                <Cell className={classes.centerCell}>Trạng thái</Cell>
+                <Cell className={classes.centerCell}>Thời gian bắt đầu</Cell>
+                <Cell className={classes.centerCell}>Thời gian kết thúc</Cell>
+                <Cell className={classes.centerCell}>Điểm danh</Cell>
+                <Cell className={classes.centerCell}></Cell>
               </React.Fragment>
             )}
             body={(row, Cell) => (
               <React.Fragment>
-                <Cell>{moment(row.datetime).format("DD/MM/yyyy")}</Cell>
-                <Cell>{ClassStatusName[row.status]}</Cell>
-                <Cell>
+                <Cell className={classes.centerCell}>
+                  {moment(row.datetime).format("DD/MM/yyyy")}
+                </Cell>
+                <Cell className={classes.centerCell}>
+                  {ClassStatusName[row.status]}
+                </Cell>
+                <Cell className={classes.centerCell}>
                   {row.startDatetime
                     ? moment(row.startDatetime).format("HH:mm")
                     : null}
                 </Cell>
-                <Cell>
+                <Cell className={classes.centerCell}>
                   {row.endDatetime
                     ? moment(row.endDatetime).format("HH:mm")
                     : null}
                 </Cell>
-                <Cell className={classes.celCenter}>
+                <Cell className={classes.centerCell}>
                   <Checkbox
                     disabled
                     checked={row.rollCalls.some((rc) => rc.isActive)}
                   />
                 </Cell>
-                <Cell className={classes.celCenter}>
+                <Cell className={classes.centerCell}>
                   {row.rollCalls.length > 0 &&
-                  row.rollCalls[0].imageId != null ? (
+                  row.rollCalls[0].type == RollCallType.auto ? (
                     <Image
                       imageId={row.rollCalls[0].imageId}
                       style={{ width: "36px", height: "36px", margin: "0" }}
@@ -123,5 +130,8 @@ export default withStyles({
   },
   content: {
     padding: "10px 15px",
+  },
+  centerCell: {
+    textAlign: "center",
   },
 })(StudentClassDetail);

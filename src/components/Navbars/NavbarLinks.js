@@ -132,10 +132,10 @@ class NavbarLinks extends BaseComponent {
     )
   }
   showModalClass = () => {
-    if (this.props.nowClass != null) {
-      this.hanldeOpenModal();
-    }
-    this.hanldeOpenModal();
+    // if (this.props.nowClass != null) {
+    //   this.hanldeOpenModal();
+    // }
+    // this.hanldeOpenModal();
   }
   handleClickNotification = event => {
     if (this.state.openNotification && this.state.openNotification.contains(event.target)) {

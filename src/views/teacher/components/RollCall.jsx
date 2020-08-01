@@ -162,6 +162,23 @@ class RollCall extends BaseComponent {
         this.success("Điểm danh thành công.");
       },
       unsuccess: (r) => {
+        if (this.state.review) {
+          this.openModal({
+            content: (
+              <Image
+                width="auto"
+                height="auto"
+                src={`data:image/png;base64,${r.data.base64Image}`}
+              />
+            ),
+            style: {
+              maxWidth: "80vw",
+              maxHeight: "80vh",
+              width: "auto",
+              height: "auto",
+            },
+          });
+        }
         this.error(r.messages[0]);
       },
     });
@@ -178,6 +195,23 @@ class RollCall extends BaseComponent {
         this.setState({});
       },
       unsuccess: (r) => {
+        if (this.state.review) {
+          this.openModal({
+            content: (
+              <Image
+                width="auto"
+                height="auto"
+                src={`data:image/png;base64,${r.data.base64Image}`}
+              />
+            ),
+            style: {
+              maxWidth: "80vw",
+              maxHeight: "80vh",
+              width: "auto",
+              height: "auto",
+            },
+          });
+        }
         this.error(r.messages[0]);
       },
     });

@@ -124,6 +124,21 @@ class TrainingFace extends BaseComponent {
         this.success(r.messages[0]);
       },
       unsuccess: (r) => {
+        if (this.state.review) {
+          this.openModal({
+            content: (
+              <Image
+                width="auto"
+                height="auto"
+                src={`data:image/png;base64,${r.data.base64Image}`}
+              />
+            ),
+            style: {
+              maxWidth: "80vw",
+              maxHeight: "80vh",
+            },
+          });
+        }
         this.success(r.messages[0]);
       },
     });

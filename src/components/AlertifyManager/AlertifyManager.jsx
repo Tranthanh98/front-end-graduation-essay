@@ -9,23 +9,25 @@ class AlertifyManager extends React.Component {
     this.state = { notifications: [] };
     this._self = this;
     this.addNewAlertify = (content, type) => {
-      this.state.notifications.unshift({
+      this.count++;
+      let notification = {
         content: content,
         type: type,
-      });
+      };
+      this.state.notifications.unshift(notification);
       this.setState({ notifications: this.state.notifications });
       setTimeout(() => {
-        if (this.state.notifications.length > 0) {
-          console.log("settimeout");
-          this.state.notifications.pop();
-          this.setState({});
-        }
+        let a = [];
+        this.state.notifications.forEach((n) => {
+          if (notification != n) a.push(n);
+        });
+        this.setState({ notifications: a });
       }, 4000);
     };
   }
   _removeNotification = (notification) => {
     let a = [];
-    this.state.notifications.forEach((n, j) => {
+    this.state.notifications.forEach((n) => {
       if (notification != n) a.push(n);
     });
     this.setState({ notifications: a });

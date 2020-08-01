@@ -159,7 +159,6 @@ class BaseComponent extends React.Component {
         !params.unBlockUi && _self.unBlockUi();
       },
     };
-    console.log(a);
     $.ajax(a);
   };
 

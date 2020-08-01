@@ -11,6 +11,7 @@ import BaseComponent from "core/BaseComponent/BaseComponent";
 import { Typography, TextField, Grid } from "@material-ui/core";
 import maleAvatar from "assets/img/male-avatar-default.jpg";
 import femaleAvatar from "assets/img/female-avatar-default.jpg";
+import {Gender} from '../../../core/Enum';
 import moment from "moment";
 
 const styles = {
@@ -134,7 +135,7 @@ class TeacherInfo extends BaseComponent {
                 <a href="#pablo" onClick={(e) => e.preventDefault()}>
                   <img
                     src={
-                      teacher.gender == teacher.male ? maleAvatar : femaleAvatar
+                      teacher.gender == Gender.male ? maleAvatar : femaleAvatar
                     }
                     alt="..."
                   />

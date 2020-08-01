@@ -20,6 +20,7 @@ import { ClassStatus } from "core/Enum";
 import RCSTable from "views/general/RCSTable";
 import GetImage from "views/general/GetImage";
 import $ from "jquery";
+import { RollCallType } from "core/Enum";
 
 class RollCall extends BaseComponent {
   constructor(props) {
@@ -231,6 +232,7 @@ class RollCall extends BaseComponent {
         );
         if (rc.length > 0) {
           rc[0].isActive = r.data.isActive;
+          rc[0].type = r.data.type;
         } else {
           classSchedule.rollCalls.push(r.data);
         }
@@ -331,7 +333,10 @@ class RollCall extends BaseComponent {
                     <Cell className={classes.centerCell}>
                       {classSchedule.rollCalls.some(
                         (rc) =>
-                          rc.studentId == row.student.id && rc.imageId != null
+                          rc.studentId == row.student.id 
+                          && rc.imageId != null 
+                          && rc.type == RollCallType.auto
+                          && rc.isActive
                       ) ? (
                         <Image
                           imageId={

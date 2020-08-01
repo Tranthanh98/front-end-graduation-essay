@@ -1,6 +1,8 @@
 import React from "react";
 import withStyles from "@material-ui/core/styles/withStyles";
 import cx from "classnames";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTimes } from "@fortawesome/free-solid-svg-icons";
 class AlertifyManager extends React.Component {
   constructor(props) {
     super(props);
@@ -21,20 +23,32 @@ class AlertifyManager extends React.Component {
       }, 4000);
     };
   }
+  _removeNotification = (notification) => {
+    let a = [];
+    this.state.notifications.forEach((n, j) => {
+      if (notification != n) a.push(n);
+    });
+    this.setState({ notifications: a });
+  };
   render() {
     const { classes } = this.props;
     const { notifications } = this.state;
     return (
       <div className={classes.root}>
         {notifications.map((n, i) => {
-          var notificationClassName = cx({
-            [classes.notification]: true,
+          var wrapperClassName = cx({
+            [classes.wrapper]: true,
             [classes[n.type]]: true,
           });
           return (
-            <p key={"alertifi" + i} className={notificationClassName}>
-              {n.content}
-            </p>
+            <div key={"alertifi" + i} className={wrapperClassName}>
+              <p className={classes.content}>{n.content}</p>
+              <FontAwesomeIcon
+                icon={faTimes}
+                onClick={() => this._removeNotification(n)}
+                className={classes.icon}
+              />
+            </div>
           );
         })}
       </div>
@@ -51,13 +65,20 @@ export default withStyles({
     height: "fit-content",
     zIndex: 99999,
   },
-  notification: {
+  wrapper: {
     width: "250px",
     padding: "16px",
     marginTop: "8px",
     color: "#fff",
     borderRadius: "5px",
     backgroundColor: "#aaa",
+    display: "flex",
+    alignItems: "center",
+    flexDirection: "row",
+  },
+  content: {
+    margin: 0,
+    flexGrow: 1,
   },
   success: {
     backgroundColor: "#5cb860",
@@ -67,5 +88,9 @@ export default withStyles({
   },
   warning: {
     backgroundColor: "#ffa21a",
+  },
+  icon: {
+    cursor: "pointer",
+    marginLeft: "16px",
   },
 })(AlertifyManager);

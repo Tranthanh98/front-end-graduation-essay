@@ -29,12 +29,9 @@ class TrainingFacePage extends BaseComponent {
   _onClickTrainFaceBtn = () => {
     const { trainingImages } = this.state;
     this.openModal({
-      content: (
-        <TrainingFace
-          trainingImages={trainingImages}
-        />
-      ),
+      content: <TrainingFace trainingImages={trainingImages} />,
       title: "Train face",
+      fullScreen: true,
     });
   };
   _getStudentInfo = () => {

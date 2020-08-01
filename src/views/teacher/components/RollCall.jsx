@@ -293,7 +293,7 @@ class RollCall extends BaseComponent {
     let reader = new FileReader();
     reader.readAsDataURL(file);
     let _self = this;
-    let resize_width = 320;
+    let resize_width = 1080;
 
     reader.onload = function(event) {
       var img = document.createElement('img');
@@ -336,7 +336,8 @@ class RollCall extends BaseComponent {
                         name="image" 
                         accept="image/*" 
                         onChange={this.getImagePhone}
-                        capture="camera"/>
+                        // capture="camera"
+                        />
                 </div>
               ) : (
                 <GetImage

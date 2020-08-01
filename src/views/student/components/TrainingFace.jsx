@@ -238,7 +238,8 @@ class TrainingFace extends BaseComponent {
                       name="image" 
                       accept="image/*" 
                       onChange={this.getImagePhone}
-                      capture="user"/>
+                      // capture="user"
+                      />
               </div>
             ) : (
               <GetImage

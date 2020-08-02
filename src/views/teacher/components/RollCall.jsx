@@ -21,7 +21,6 @@ import RCSTable from "views/general/RCSTable";
 import GetImage from "views/general/GetImage";
 import $ from "jquery";
 import { RollCallType } from "core/Enum";
-import resizebase64 from 'resize-base64';
 
 class RollCall extends BaseComponent {
   constructor(props) {

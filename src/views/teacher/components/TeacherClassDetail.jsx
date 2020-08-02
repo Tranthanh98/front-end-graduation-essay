@@ -19,6 +19,8 @@ import { ClassStatusName } from "core/Enum";
 import GridContainer from "components/Grid/GridContainer";
 import { OpenInNew as OpenIcon } from "@material-ui/icons";
 import StudentDetail from "views/teacher/components/StudentDetail";
+import { Parser } from 'json2csv';
+import FileSaver from 'file-saver';
 
 class TeacherClassDetail extends BaseComponent {
   constructor(props) {
@@ -56,6 +58,36 @@ class TeacherClassDetail extends BaseComponent {
       title: `${studying.student.id} - ${studying.student.name}`,
     });
   };
+  _getDataExcel = () =>{
+    const { classOfTeacher } = this.state;
+    const sobuoidahoc = classOfTeacher.classSchedules.filter((cs) => {
+      return cs.status != ClassStatus.schedule;
+    }).length;
+    return classOfTeacher.studyings.map((row,index)=>{
+      var sobuoidiemdanh = 0;
+      classOfTeacher.classSchedules.forEach((cs) => {
+        if (
+          cs.rollCalls.some(
+            (rc) => rc.studentId == row.student.id && rc.isActive
+          )
+        )
+          sobuoidiemdanh++;
+      });
+      return {
+        "STT": index,
+        "Mã số sinh viên": row.student.id,
+        "Họ và tên": row.student.name,
+        "Số buổi học": sobuoidiemdanh,
+        "Số buổi vắng": sobuoidahoc - sobuoidiemdanh
+      }
+    })
+  }
+  _exportExcel = () =>{
+    const parser = new Parser(); //new Parse
+    const csv = parser.parse(this._getDataExcel());
+    const blob = new Blob([csv], {type: "data:text/csv;charset=utf-8,"}); 
+    FileSaver.saveAs(blob, "Điểm danh " + this.state.classOfTeacher.subject.name + '.csv'); 
+  }
   renderBody() {
     const { classOfTeacher } = this.state;
     const { classes } = this.props;
@@ -95,6 +127,9 @@ class TeacherClassDetail extends BaseComponent {
                 }
                 /{classOfTeacher.classSchedules.length}
               </FormLabel>
+            </Grid>
+            <Grid item xs={12}>
+                <Button variant="contained" color="primary" onClick={this._exportExcel}>Xuất file báo cáo</Button>
             </Grid>
           </Grid>
           {this.loadDataSuccess ? (

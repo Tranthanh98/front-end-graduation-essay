@@ -56,6 +56,33 @@ class InfoPage extends BaseComponent {
   componentDidMount() {
     this._getStudentInfo();
   }
+  componentWillUnmount(){
+    this.setState({
+      student: {
+        id: "",
+        name: "",
+        address: "",
+        email: "",
+        phoneNumber: "",
+        birthday: new Date(),
+        hometown: "",
+        course: {
+          name: "",
+        },
+        major: {
+          name: "",
+          faculty: {
+            name: "",
+          },
+        },
+        majorSpecialty: {
+          name: "",
+        },
+        gender: 1,
+        trainingImages: [],
+      },
+    })
+  }
   renderBody() {
     const { student } = this.state;
     console.log("student information page");

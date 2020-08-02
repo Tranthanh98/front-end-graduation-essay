@@ -38,6 +38,11 @@ class SubjectPage extends BaseComponent {
   componentDidMount() {
     this._getClassOfStudent();
   }
+  componentWillUnmount(){
+    this.setState({
+      studyings : []
+    })
+  }
   renderBody() {
     const { classes } = this.props;
     const { studyings } = this.state;

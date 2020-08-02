@@ -48,6 +48,11 @@ class TrainingFacePage extends BaseComponent {
   componentDidMount() {
     this._getStudentInfo();
   }
+  componentWillUnmount(){
+    this.setState({
+      trainingImages : []
+    })
+  }
   renderBody() {
     const { classes } = this.props;
     const { trainingImages } = this.state;

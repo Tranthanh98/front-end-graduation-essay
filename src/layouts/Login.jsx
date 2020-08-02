@@ -124,6 +124,7 @@ class Login extends BaseComponent {
         this.login(apiResult);
       },
       unsuccess: (apiResult) => {
+        this.logout();
         this.error(apiResult.messages[0]);
       },
     });

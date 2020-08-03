@@ -17,6 +17,7 @@ class SubjectPage extends BaseComponent {
       studyings: [],
     };
     this.studentId = sensitiveStorage.getStudentId();
+    this.count = 0;
   }
   _getClassOfStudent = () => {
     this.ajaxGet({
@@ -38,15 +39,16 @@ class SubjectPage extends BaseComponent {
   componentDidMount() {
     this._getClassOfStudent();
   }
-  componentWillUnmount(){
+  componentWillUnmount() {
     this.setState({
-      studyings : []
-    })
+      studyings: [],
+    });
   }
   renderBody() {
     const { classes } = this.props;
     const { studyings } = this.state;
-    console.log("subject page");
+    this.count++;
+    console.log("subject page", this.count);
     return (
       <Card profile style={{ marginTop: 0 }}>
         <CardHeader color="primary" className={classes.header}>

@@ -33,6 +33,9 @@ class Student extends BaseComponent {
     this.userId = sensitiveStorage.getUserId();
     this.userRole = sensitiveStorage.getUserRole();
   }
+  _checkUser = () => {
+    return this.userId && this.userRole == UserRole.student;
+  };
   switchRoutes = () => {
     return (
       <Switch>
@@ -61,9 +64,6 @@ class Student extends BaseComponent {
         )}
       </Switch>
     );
-  };
-  _checkUser = () => {
-    return this.userId && this.userRole == UserRole.student;
   };
   handleImageClick = (image) => {
     this.setState({

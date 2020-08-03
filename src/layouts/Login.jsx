@@ -73,7 +73,6 @@ class Login extends BaseComponent {
   constructor(props) {
     super(props);
     this.state = {
-      auth: false,
       username: "",
       password: "",
       error: false,
@@ -81,10 +80,12 @@ class Login extends BaseComponent {
       isRemember: false,
     };
   }
-
   componentDidMount() {
     document.addEventListener("keypress", this.handleKeyEnter);
     this._checkLogin();
+  }
+  componentWillUnmount() {
+    document.removeEventListener("keypress", this.handleKeyEnter);
   }
   handleKeyEnter = (e) => {
     const { username, password, isRemember } = this.state;
@@ -106,6 +107,7 @@ class Login extends BaseComponent {
     }
   };
   _onClickLogin = () => {
+    console.log("login");
     const { username, password, isRemember } = this.state;
     if (username == "" || password == "") {
       this._error("username và password không được để trống!");
@@ -124,7 +126,6 @@ class Login extends BaseComponent {
         this.login(apiResult);
       },
       unsuccess: (apiResult) => {
-        this.logout();
         this.error(apiResult.messages[0]);
       },
     });
@@ -154,6 +155,8 @@ class Login extends BaseComponent {
     } else {
       sensitiveStorage.removeUserId();
       sensitiveStorage.removeUserRole();
+      sensitiveStorage.removeStudentId();
+      sensitiveStorage.removeTeacherId();
     }
   };
   renderBody() {

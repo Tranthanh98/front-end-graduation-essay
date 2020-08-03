@@ -36,8 +36,13 @@ class ScheduleTeachPage extends BaseComponent {
     this.teacherId = sensitiveStorage.getTeacherId();
   }
   _getAllClassOfTeacher = () => {
-    this.ajaxGet({
-      url: `/api/teacher/GetAllClassByTeacherId?teacherId=${this.teacherId}`,
+    const data = {
+      teacherId: this.teacherId,
+      date: this.state.date,
+    };
+    this.ajaxPost({
+      url: `/api/teacher/GetAllClassByTeacherId`,
+      data: data,
       success: (r) => {
         this.setState({ classesOfTeacher: r.data });
       },

@@ -25,6 +25,7 @@ class TrainingFacePage extends BaseComponent {
       trainingImages: [],
     };
     this.studentId = sensitiveStorage.getStudentId();
+    this.count = 0;
   }
   _onClickTrainFaceBtn = () => {
     const { trainingImages } = this.state;
@@ -56,7 +57,8 @@ class TrainingFacePage extends BaseComponent {
   renderBody() {
     const { classes } = this.props;
     const { trainingImages } = this.state;
-    console.log("training face page");
+    this.count++;
+    console.log("training face page", this.count);
     return (
       <GridContainer>
         <Grid item xs={12}>

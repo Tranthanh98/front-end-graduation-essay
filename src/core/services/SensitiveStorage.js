@@ -14,30 +14,7 @@ class SensitiveStorage {
 
   getUserId() {
     return parseInt(storage.getItem("user_id"));
-  }
-
-  setStudentId(id) {
-    storage.setItem("student_id", `${id}`);
-  }
-
-  getStudentId() {
-    return parseInt(storage.getItem("student_id"));
-  }
-  removeStudentId() {
-    storage.removeItem("student_id");
-  }
-
-  setTeacherId(id) {
-    storage.setItem("teacher_id", `${id}`);
-  }
-
-  getTeacherId() {
-    return parseInt(storage.getItem("teacher_id"));
-  }
-
-  removeTeacherId() {
-    storage.removeItem("teacher_id");
-  }
+  }  
 
   removeUserId() {
     storage.removeItem("user_id");
@@ -54,47 +31,28 @@ class SensitiveStorage {
   removeUserRole() {
     storage.removeItem("USER_ROLE");
   }
-
-  getToken() {
-    return storage.getItem("TOKEN");
+  //Student id
+  setStudentId(id) {
+    storage.setItem("student_id", `${id}`);
   }
 
-  setToken(token) {
-    storage.setItem("TOKEN", token);
+  getStudentId() {
+    return parseInt(storage.getItem("student_id"));
+  }
+  removeStudentId() {
+    storage.removeItem("student_id");
+  }
+  //Teacher Id
+  setTeacherId(id) {
+    storage.setItem("teacher_id", `${id}`);
   }
 
-  removeToken() {
-    storage.removeItem("TOKEN");
+  getTeacherId() {
+    return parseInt(storage.getItem("teacher_id"));
   }
 
-  getTrainingId() {
-    return storage.getItem("id");
-  }
-
-  setTrainingId(id) {
-    storage.setItem("id", id);
-  }
-
-  removeTrainingId() {
-    storage.removeItem("id");
-  }
-  setUserName(userName) {
-    storage.setItem("USERNAME", userName);
-  }
-  getUsername() {
-    return storage.getItem("USERNAME");
-  }
-  removeUserName() {
-    storage.removeItem("USERNAME");
-  }
-  setClassRoom(classRoom) {
-    storage.setItem("CLASS", classRoom);
-  }
-  getClassRoom() {
-    return storage.getItem("CLASS");
-  }
-  removeClassRoom() {
-    storage.removeItem("CLASS");
+  removeTeacherId() {
+    storage.removeItem("teacher_id");
   }
 }
 export const sensitiveStorage = new SensitiveStorage();

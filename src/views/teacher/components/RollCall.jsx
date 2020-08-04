@@ -262,6 +262,7 @@ class RollCall extends BaseComponent {
       url: `/api/class/closeClass?classScheduleId=${classSchedule.id}`,
       success: (r) => {
         classSchedule.status = r.data.status;
+        classSchedule.endDatetime = r.data.endDatetime
         this.setState({}, () => {
           this.success(r.messages[0]);
         });

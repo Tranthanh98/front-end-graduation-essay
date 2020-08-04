@@ -57,7 +57,7 @@ class ScheduleTeachPage extends BaseComponent {
       success: (r) => {
         this._openClassRollCall(classSchedule);
       },
-      error: (r) => {
+      unsuccess: (r) => {
         this.error(r.messages[0]);
       },
     });
@@ -79,7 +79,9 @@ class ScheduleTeachPage extends BaseComponent {
     this._getAllClassOfTeacher();
   }
   _onChangeDate = (date) => {
-    this.setState({ date: date });
+    this.setState({ date: date }, () => {
+      this._getAllClassOfTeacher();
+    });
   };
   renderBody() {
     const { classesOfTeacher, date } = this.state;
@@ -108,6 +110,7 @@ class ScheduleTeachPage extends BaseComponent {
                     KeyboardButtonProps={{
                       "aria-label": "change date",
                     }}
+                    autoComplete
                     inputProps={{
                       style: { textAlign: "center" },
                     }}
@@ -119,87 +122,85 @@ class ScheduleTeachPage extends BaseComponent {
               </GridItem>
               {classesOfTeacher.map((c) => {
                 return c.classSchedules.map((cs) => {
-                  if (differenceInDays(date, new Date(cs.datetime)) == 0) {
-                    classInDate++;
-                    const color =
-                      cs.status == ClassStatus.schedule
-                        ? "info"
-                        : cs.status == ClassStatus.opening
-                        ? "warning"
-                        : "success";
-                    return (
-                      <GridItem
-                        xs={12}
-                        sm={6}
-                        md={4}
-                        xl={3}
-                        key={`${cs.classId}${cs.datetime}`}
-                      >
-                        <Card>
-                          <CardHeader color={color} stats icon>
-                            <CardIcon color={color}>
-                              <Typography variant="h6">
-                                {moment(cs.datetime).format("HH:mm")}
-                              </Typography>
-                            </CardIcon>
-                          </CardHeader>
-                          <GridContainer
-                            style={{ padding: "10px", textAlign: "left" }}
-                          >
-                            <GridItem xs={12}>
-                              <Typography variant="h6">
-                                {c.subject.name}
-                              </Typography>
-                            </GridItem>
-                            <GridItem xs={12}>
-                              <Typography
-                                variant="body1"
-                                className={classes.body1}
-                              >
-                                <RoomIcon className={classes.icon} /> {c.room}
-                              </Typography>
-                            </GridItem>
-                            <GridItem xs={6}>
-                              <Typography
-                                variant="body1"
-                                className={classes.body1}
-                              >
-                                <QueryBuilderIcon className={classes.icon} />
-                                {cs.status != ClassStatus.schedule
-                                  ? moment(cs.startDatetime).format("HH:mm")
-                                  : "_____"}
-                              </Typography>
-                            </GridItem>
-                            <GridItem xs={6}>
-                              <Typography
-                                variant="body1"
-                                className={classes.body1}
-                              >
-                                <AlarmOnIcon className={classes.icon} />
-                                {cs.status == ClassStatus.closed
-                                  ? moment(cs.endDatetime).format("HH:mm")
-                                  : "_____"}
-                              </Typography>
-                            </GridItem>
-                          </GridContainer>
-                          <CardFooter stats>
-                            <Button
-                              onClick={() => {
-                                this._onClickClassInDateBtn(cs);
-                              }}
-                              color="primary"
+                  classInDate++;
+                  const color =
+                    cs.status == ClassStatus.schedule
+                      ? "info"
+                      : cs.status == ClassStatus.opening
+                      ? "warning"
+                      : "success";
+                  return (
+                    <GridItem
+                      xs={12}
+                      sm={6}
+                      md={4}
+                      xl={3}
+                      key={`${cs.classId}${cs.datetime}`}
+                    >
+                      <Card>
+                        <CardHeader color={color} stats icon>
+                          <CardIcon color={color}>
+                            <Typography variant="h6">
+                              {moment(cs.datetime).format("HH:mm")}
+                            </Typography>
+                          </CardIcon>
+                        </CardHeader>
+                        <GridContainer
+                          style={{ padding: "10px", textAlign: "left" }}
+                        >
+                          <GridItem xs={12}>
+                            <Typography variant="h6">
+                              {c.subject.name}
+                            </Typography>
+                          </GridItem>
+                          <GridItem xs={12}>
+                            <Typography
+                              variant="body1"
+                              className={classes.body1}
                             >
-                              {cs.status == ClassStatus.schedule
-                                ? "Mở lớp"
-                                : cs.status == ClassStatus.opening
-                                ? "Tham gia lớp học"
-                                : "Xem chi tiết"}
-                            </Button>
-                          </CardFooter>
-                        </Card>
-                      </GridItem>
-                    );
-                  }
+                              <RoomIcon className={classes.icon} /> {c.room}
+                            </Typography>
+                          </GridItem>
+                          <GridItem xs={6}>
+                            <Typography
+                              variant="body1"
+                              className={classes.body1}
+                            >
+                              <QueryBuilderIcon className={classes.icon} />
+                              {cs.status != ClassStatus.schedule
+                                ? moment(cs.startDatetime).format("HH:mm")
+                                : "_____"}
+                            </Typography>
+                          </GridItem>
+                          <GridItem xs={6}>
+                            <Typography
+                              variant="body1"
+                              className={classes.body1}
+                            >
+                              <AlarmOnIcon className={classes.icon} />
+                              {cs.status == ClassStatus.closed
+                                ? moment(cs.endDatetime).format("HH:mm")
+                                : "_____"}
+                            </Typography>
+                          </GridItem>
+                        </GridContainer>
+                        <CardFooter stats>
+                          <Button
+                            onClick={() => {
+                              this._onClickClassInDateBtn(cs);
+                            }}
+                            color="primary"
+                          >
+                            {cs.status == ClassStatus.schedule
+                              ? "Mở lớp"
+                              : cs.status == ClassStatus.opening
+                              ? "Tham gia lớp học"
+                              : "Xem chi tiết"}
+                          </Button>
+                        </CardFooter>
+                      </Card>
+                    </GridItem>
+                  );
                 });
               })}
               {classInDate == 0 ? (
